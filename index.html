@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Class Picker">
+    <!-- Home Screen Icon (Simple SVG Data URI) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%232F5D62'%3E%3Crect width='100%25' height='100%25' fill='%232F5D62'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='250' fill='white'%3ECP%3C/text%3E%3C/svg%3E">
+    
+    <title>Class Picker</title>
+    <style>
+        :root {
+            /* Default Theme */
+            --bg-color: #BCE2E8;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #2F5D62;
+            --text-sub: #5C8D89;
+            --accent: #F4F4F9;
+            --btn-primary: #2F5D62;
+            --btn-text: #FFFFFF;
+            --danger: #EF4444;
+            
+            --gender-m: #059669;
+            --gender-f: #7C3AED;
+            
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(white 2px, transparent 2px),
+                radial-gradient(white 2px, transparent 2px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            color: var(--text-main);
+            font-family: var(--font-family);
+            height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header */
+        header {
+            padding: 0 1rem; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid white; z-index: 30; height: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); flex-shrink: 0;
+        }
+        .brand { font-size: 1.2rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+
+        /* Icons */
+        .icon-btn {
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; background: white; border: 1px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 0;
+        }
+        .icon-btn svg { width: 20px; height: 20px; fill: var(--text-main); transition: fill 0.2s; }
+        .icon-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .icon-btn:active { transform: scale(0.95); }
+
+        /* Lang Button Text Style */
+        .lang-text { font-weight: 800; font-size: 0.9rem; color: var(--text-main); }
+
+        /* Tabs */
+        .anim-tabs {
+            display: flex; background: rgba(255,255,255,0.8); padding: 4px; border-radius: 50px; gap: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .tab-btn {
+            width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; opacity: 0.6; background: transparent;
+            position: relative; border: 2px solid transparent;
+        }
+        .tab-btn svg { width: 24px; height: 24px; fill: var(--text-main); }
+        .tab-btn:hover { opacity: 1; background: rgba(255,255,255,0.5); }
+        .tab-btn.active { background: var(--btn-primary); opacity: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .tab-btn.active svg { fill: white; }
+        .tab-btn::after {
+            content: attr(data-tooltip); position: absolute; bottom: -35px; left: 50%;
+            transform: translateX(-50%); font-size: 0.7rem; background: var(--text-main); color: white;
+            padding: 4px 8px; border-radius: 4px; opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap; z-index: 40;
+        }
+        .tab-btn:hover::after { opacity: 1; }
+
+        .header-controls { display: flex; gap: 0.8rem; align-items: center; }
+        select {
+            padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid white;
+            background: rgba(255,255,255,0.9); color: var(--text-main); font-weight: bold;
+            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); outline: none;
+            max-width: 150px; height: 40px;
+        }
+
+        /* Layout */
+        .main-container { display: flex; flex: 1; height: calc(100vh - 60px); position: relative; overflow: hidden; }
+
+        /* Sidebar Left */
+        .sidebar {
+            width: 250px; background: var(--sidebar-bg); border-right: 1px solid white;
+            display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; top: 0; bottom: 0; left: 0; z-index: 20;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.05); flex-shrink: 0;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+        .sidebar-header {
+            padding: 1rem; background: rgba(255,255,255,0.5);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: var(--text-main); font-weight: bold;
+        }
+        .student-list { flex: 1; overflow-y: auto; padding: 0.8rem; }
+        .student-item {
+            display: flex; align-items: center; padding: 0.5rem 0.8rem;
+            border-radius: 8px; margin-bottom: 5px; cursor: pointer;
+            font-size: 0.95rem; background: white; transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .student-item:hover { transform: translateX(3px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .student-item.male span { color: var(--gender-m); }
+        .student-item.female span { color: var(--gender-f); }
+        .student-item.absent { opacity: 0.5; background: #f1f5f9; }
+        .student-item.absent span { text-decoration: line-through; color: #94a3b8; }
+        .student-item.picked { background: #f1f5f9; opacity: 0.6; }
+        .checkbox {
+            width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: 4px;
+            margin-right: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: transparent; transition: all 0.2s;
+        }
+        .student-item.picked .checkbox { background: var(--text-sub); border-color: var(--text-sub); color: white; content: "✓"; }
+        .student-item.absent .checkbox { border-color: var(--danger); background: var(--danger); }
+
+        /* Sidebar Right */
+        .winners-bar {
+            width: 180px; background: var(--sidebar-bg); border-left: 1px solid white;
+            display: flex; flex-direction: column; padding: 0.8rem; overflow-y: auto;
+            position: absolute; top: 0; bottom: 80px; right: 0; z-index: 10;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+        }
+        .winners-title {
+            font-size: 0.95rem; color: var(--text-main); margin-bottom: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: bold; letter-spacing: 1px; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;
+        }
+        .clear-btn {
+            background: white; color: var(--danger); border: 1px solid var(--danger);
+            padding: 4px 8px; font-size: 0.7rem; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .clear-btn:hover { background: var(--danger); color: white; }
+        .winner-card {
+            background: white; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem;
+            border-left: 3px solid var(--text-main);
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; align-items: center;
+        }
+        .winner-card.male { border-left-color: var(--gender-m); }
+        .winner-card.female { border-left-color: var(--gender-f); }
+        .winner-card.male .name { color: var(--gender-m); }
+        .winner-card.female .name { color: var(--gender-f); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .winner-card .name { font-weight: bold; font-size: 0.85rem; flex: 1; line-height: 1.2; word-break: break-all; }
+        .winner-card .order { 
+            font-size: 0.65rem; color: white; background: var(--text-sub); 
+            padding: 1px 4px; border-radius: 6px; margin-right: 4px; min-width: 18px; text-align: center;
+        }
+
+        /* Stage */
+        .stage {
+            flex: 1; margin-left: 0; margin-right: 180px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; transition: margin 0.3s;
+        }
+        .sidebar:not(.collapsed) ~ .stage { margin-left: 250px; }
+
+        canvas { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
+        
+        .result-wrapper {
+            z-index: 5; text-align: center; margin-bottom: 2rem; position: absolute;
+            top: 45%; left: 50%; transform: translate(-50%, -50%); width: 80%; pointer-events: none;
+        }
+        .result-name {
+            font-size: 4rem; font-weight: 800; color: var(--text-main);
+            text-shadow: 3px 3px 0px rgba(255,255,255,0.8); line-height: 1.2; white-space: pre-wrap;
+        }
+
+        .control-panel {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 1rem; align-items: center; z-index: 15;
+            background: rgba(255,255,255,0.9); padding: 0.8rem 2rem; border-radius: 50px;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(47, 93, 98, 0.2); border: 1px solid white;
+        }
+        .pick-btn {
+            padding: 0.8rem 3rem; font-size: 1.5rem; border-radius: 50px;
+            background: var(--btn-primary); color: var(--btn-text); border: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); cursor: pointer;
+            font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;
+        }
+        .pick-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        .pick-btn:active { transform: translateY(2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+
+        .count-selector { display: flex; align-items: center; background: white; border-radius: 30px; padding: 5px; border: 1px solid #e2e8f0; }
+        .count-label { margin: 0 8px; display: flex; align-items: center; color: var(--text-sub); }
+        .count-label svg { width: 18px; height: 18px; fill: currentColor; }
+        .count-btn {
+            width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: var(--text-main);
+            font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; border: none;
+        }
+        .count-btn:hover { background: var(--btn-primary); color: white; transform: none; }
+        .count-val { font-size: 1.2rem; font-weight: bold; width: 25px; text-align: center; color: var(--text-main); }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        #confirmModal { z-index: 200; }
+
+        .modal-content {
+            background: #fff; border-radius: 24px; width: 90%; max-width: 600px;
+            max-height: 90vh; display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); color: #333;
+            overflow: hidden; 
+        }
+        .modal-fixed-header { padding: 1.5rem 2rem 0.5rem; background: #fff; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; }
+        .modal-scroll-body { padding: 1.5rem 2rem; overflow-y: auto; flex: 1; }
+        .modal-fixed-footer {
+            padding: 1rem 2rem 1.5rem; background: #fff; border-top: 1px solid #f1f5f9;
+            display: flex; gap: 1rem; justify-content: flex-end; flex-shrink: 0;
+        }
+
+        .class-tabs-container {
+            width: 100%; overflow-x: auto; padding: 5px 2px; white-space: nowrap;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .class-tabs-container::-webkit-scrollbar { display: none; }
+        .class-tabs { display: flex; gap: 8px; }
+        .class-tab {
+            padding: 8px 24px 8px 16px; background: #f1f5f9; border-radius: 8px; font-size: 0.9rem;
+            cursor: pointer; color: #64748b; font-weight: bold; transition: all 0.2s; border: 1px solid #cbd5e1;
+            flex-shrink: 0; position: relative;
+        }
+        .class-tab:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .class-tab.active { color: white; border-color: transparent; box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+        .class-tab.add-new { background: transparent; border: 2px dashed #94a3b8; color: #64748b; padding-right: 16px; }
+        .class-tab.add-new:hover { border-color: var(--btn-primary); color: var(--btn-primary); background: white; }
+        .tab-delete-btn {
+            position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--danger); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer;
+            opacity: 0; transition: opacity 0.2s, transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .class-tab:hover .tab-delete-btn { opacity: 1; }
+        .tab-delete-btn:hover { transform: scale(1.1); }
+
+        .setting-group { margin-bottom: 1.5rem; }
+        .setting-label { display: block; margin-bottom: 0.5rem; color: var(--text-main); font-weight: bold; }
+        .setting-help { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+        
+        .settings-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .settings-col { flex: 1; }
+        .settings-col.narrow { flex: 0 0 180px; } 
+        
+        textarea, input[type="text"] {
+            width: 100%; background: #f8fafc; border: 2px solid #e2e8f0;
+            color: var(--text-main); padding: 0.8rem; border-radius: 12px; font-family: inherit; font-size: 1rem;
+        }
+        textarea:focus, input:focus { outline: none; border-color: var(--text-main); background: #fff; }
+
+        .theme-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .theme-opt {
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+            border: 3px solid transparent; transition: transform 0.2s; position: relative;
+        }
+        .theme-opt.selected { border-color: var(--text-main); transform: scale(1.1); }
+        .theme-opt:hover { transform: scale(1.1); }
+
+        /* Data management area */
+        .data-manage-area {
+            background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
+            display: flex; gap: 15px; align-items: flex-start; margin-top: 10px;
+        }
+        .manage-item {
+            flex: 1; text-align: center;
+        }
+        .manage-btn {
+            background: white; border: 1px solid #cbd5e1; color: #64748b;
+            padding: 10px; border-radius: 8px; font-size: 0.9rem; cursor: pointer;
+            width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            transition: all 0.2s;
+        }
+        .manage-btn:hover { background: #e2e8f0; transform: translateY(-1px); }
+        .manage-btn svg { width: 24px; height: 24px; fill: var(--text-main); }
+        .manage-desc { font-size: 0.7rem; color: #94a3b8; margin-top: 5px; }
+
+        @media (max-width: 900px) {
+            .winners-bar { display: none; } .stage { margin-right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <button class="icon-btn" id="toggleSidebarBtn" title="リスト開閉">
+                <svg viewBox="0 0 24 24"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" /></svg>
+            </button>
+            <span id="appTitle">Class Picker</span>
+        </div>
+
+        <div class="anim-tabs">
+            <div class="tab-btn active" data-anim="drum" data-tooltip="スロット">
+                <svg viewBox="0 0 24 24"><path d="M17,2H7A2,2 0 0,0 5,4V20A2,2 0 0,0 7,22H17A2,2 0 0,0 19,20V4A2,2 0 0,0 17,2M7,4H17V8H7V4M17,20H7V16H17V20M7,14H17V10H7V14Z" /></svg>
+            </div>
+            <div class="tab-btn" data-anim="roulette" data-tooltip="ルーレット">
+                <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4V12H20A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z" /></svg>
+            </div>
+            <div class="tab-btn" data-anim="garagara" data-tooltip="ガラガラ">
+                <svg viewBox="0 0 24 24"><path d="M12,2L4,7V17L12,22L20,17V7L12,2M12,4.5L18,8.2V15.8L12,19.5L6,15.8V8.2L12,4.5Z" /></svg>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <button class="icon-btn" id="quickLangBtn" title="言語切替">
+                <span class="lang-text">JP</span>
+            </button>
+            <select id="classSelector" title="クラス選択"></select>
+            <button id="soundBtn" class="icon-btn" title="音のON/OFF">
+                <svg viewBox="0 0 24 24" id="soundIcon"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z" /></svg>
+            </button>
+            <button id="settingsBtn" class="icon-btn" title="設定">
+                <svg viewBox="0 0 24 24"><path d="M19.14,12.94C19.14,12.78 19.14,12.61 19.14,12.45C19.14,12.29 19.14,12.12 19.14,11.96C19.14,11.79 19.14,11.63 19.14,11.46L21.41,9.71C21.61,9.55 21.66,9.27 21.53,9.04L19.38,5.32C19.25,5.09 18.96,5 18.72,5.1L16.05,6.17C15.49,5.74 14.88,5.38 14.23,5.11L13.82,2.27C13.79,2 13.56,1.81 13.3,1.81H9C8.74,1.81 8.5,2 8.47,2.27L8.06,5.11C7.41,5.38 6.8,5.75 6.24,6.17L3.57,5.1C3.33,5 3.04,5.09 2.91,5.32L0.76,9.04C0.63,9.27 0.68,9.55 0.88,9.71L3.15,11.46C3.15,11.63 3.15,11.79 3.15,11.96C3.15,12.12 3.15,12.29 3.15,12.45C3.15,12.61 3.15,12.78 3.15,12.94L0.88,14.69C0.68,14.85 0.63,15.13 0.76,15.36L2.91,19.08C3.04,19.31 3.33,19.4 3.57,19.3L6.24,18.23C6.8,18.66 7.41,19.03 8.06,19.29L8.47,22.13C8.5,22.4 8.74,22.59 9,22.59H13.3C13.56,22.59 13.79,22.4 13.82,22.13L14.23,19.29C14.88,19.03 15.49,18.66 16.05,18.23L18.72,19.3C18.96,19.4 19.25,19.31 19.38,19.08L21.53,15.36C21.66,15.13 21.61,14.85 21.41,14.69L19.14,12.94M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5Z" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar collapsed" id="sidebar">
+            <div class="sidebar-header">
+                <span id="studentListTitle">生徒リスト</span>
+                <span id="countDisplay">0/0</span>
+            </div>
+            <div class="student-list" id="studentListContainer"></div>
+        </div>
+
+        <div class="stage">
+            <canvas id="animCanvas" width="900" height="700"></canvas>
+            
+            <div class="result-wrapper">
+                <div class="result-name" id="resultName">READY</div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="count-selector" title="人数">
+                    <span class="count-label">
+                        <!-- People Icon -->
+                        <svg viewBox="0 0 24 24"><path d="M16,11C16,13.76 13.76,16 11,16C8.24,16 6,13.76 6,11C6,8.24 8.24,6 11,6C13.76,6 16,8.24 16,11M11,4C14.87,4 18,7.13 18,11C18,14.87 14.87,18 11,18C7.13,18 4,14.87 4,11C4,7.13 7.13,4 11,4M11,2C6.03,2 2,6.03 2,11C2,15.97 6.03,20 11,20C15.97,20 20,15.97 20,11C20,6.03 15.97,2 11,2Z" /></svg>
+                    </span>
+                    <button class="count-btn" id="cntMinus">-</button>
+                    <div class="count-val" id="cntValue">1</div>
+                    <button class="count-btn" id="cntPlus">+</button>
+                </div>
+                <button class="pick-btn" id="pickBtn">START</button>
+            </div>
+        </div>
+
+        <div class="winners-bar">
+            <div class="winners-title">
+                <span id="winnersTitle">WINNERS</span>
+                <button class="clear-btn" id="clearHistoryBtn">クリア</button>
+            </div>
+            <div id="winnersContainer"></div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content" style="max-width: 400px; height: auto;">
+            <div class="modal-scroll-body" style="text-align:center;">
+                <h3 style="color:var(--text-main); margin-top:0;" id="confirmTitle">確認</h3>
+                <p id="confirmMessage">履歴をすべて消去しますか？</p>
+            </div>
+            <div class="modal-fixed-footer" style="justify-content: center;">
+                <button id="cancelConfirmBtn" style="background:#e2e8f0; color:#475569; border:none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">キャンセル</button>
+                <button id="doConfirmBtn" style="background:var(--danger); color:white; border:none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">実行する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-fixed-header">
+                <h2 style="margin-top:0; color:var(--text-main);" id="settingsTitle">設定 (Settings)</h2>
+                <!-- Class Tabs -->
+                <div class="class-tabs-container">
+                    <div id="classTabs" class="class-tabs"></div>
+                </div>
+            </div>
+
+            <div class="modal-scroll-body">
+                <div class="settings-row">
+                    <div class="settings-col narrow">
+                        <label class="setting-label" id="classNameLabel">クラス名</label>
+                        <input type="text" id="classNameInput">
+                    </div>
+                    <div class="settings-col">
+                        <label class="setting-label" id="themeLabel">テーマカラー</label>
+                        <div class="theme-options" id="themeSelector"></div>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label" id="listLabel">名簿リスト</label>
+                    <textarea id="nameListInput" style="height: 150px;" placeholder="田中 太郎&#10;鈴木 花子 (女)&#10;佐藤 健 (男)"></textarea>
+                    <div class="setting-help" id="listHelp">※名簿は1行に1人。<br>※行の右端に「男」「女」「M」「F」があれば自動設定されます。</div>
+                </div>
+
+                <!-- Backup & Restore -->
+                <div class="setting-group">
+                    <label class="setting-label" id="dataLabel">データ移行 (Backup & Restore)</label>
+                    <div class="data-manage-area">
+                        <div class="manage-item">
+                            <button id="exportBtn" class="manage-btn">
+                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L6.2,18.1L11.1,23L16,18.1V11H16Z" /></svg>
+                                <span id="exportText">ファイルに保存</span>
+                            </button>
+                            <div class="manage-desc" id="exportDesc">設定を保存します</div>
+                        </div>
+                        <div class="manage-item">
+                            <button id="importBtn" class="manage-btn">
+                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M8,15.06L9.41,13.65L11,15.24V11H13V15.24L14.59,13.65L16,15.06L12,19.06L8,15.06Z" /></svg>
+                                <span id="importText">ファイルを読み込み</span>
+                            </button>
+                            <div class="manage-desc" id="importDesc">設定を復元します</div>
+                        </div>
+                        <input type="file" id="importInput" style="display:none" accept=".json">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-fixed-footer" style="justify-content: space-between;">
+                <button id="clearListBtn" style="background: white; color: var(--danger); border:1px solid var(--danger); padding: 0.8rem; border-radius: 8px; cursor: pointer;">名簿クリア</button>
+                <button id="saveSettingsBtn" style="background: var(--btn-primary); color: white; border:none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer;">保存</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+/**
+ * Class Picker Pro - v21.0
+ */
+
+const themes = {
+    blue:   { main: '#2F5D62', sub: '#5C8D89', bg: '#BCE2E8', btn: '#2F5D62' },
+    pink:   { main: '#9D4C6C', sub: '#D689A8', bg: '#F8D8E8', btn: '#9D4C6C' },
+    green:  { main: '#3D7355', sub: '#7AB596', bg: '#D1E8D9', btn: '#3D7355' },
+    yellow: { main: '#8B7D2B', sub: '#BFB25F', bg: '#FFF8C7', btn: '#8B7D2B' },
+    purple: { main: '#5D4C75', sub: '#9284A8', bg: '#E4D8F3', btn: '#5D4C75' }
+};
+
+const texts = {
+    ja: { 
+        settings: "設定 (Settings)", class: "クラス名", theme: "テーマカラー", list: "名簿リスト", 
+        help: "※名簿は1行に1人。<br>※行の右端に「男」「女」「M」「F」があれば自動設定されます。", 
+        clearList: "名簿クリア", save: "保存", addNew: "＋ 新規", confirm: "確認", 
+        clearMsg: "履歴をすべて消去しますか？", yes: "消去する", no: "キャンセル", 
+        delClassMsg: "このクラスを削除しますか？",
+        clearListMsg: "入力されている名簿をすべて消去しますか？",
+        data: "データ移行", export: "ファイルに保存", import: "ファイルを読み込み",
+        exportDesc: "設定を保存します", importDesc: "設定を復元します",
+        studentList: "生徒リスト", winners: "WINNERS", clear: "クリア", ready: "READY", start: "スタート",
+        tooltips: { drum: "スロット", roulette: "ルーレット", garagara: "ガラガラ" }
+    },
+    en: { 
+        settings: "Settings", class: "Class Name", theme: "Theme Color", list: "Student List", 
+        help: "* One name per line.<br>* Auto-gender if line ends with 'M'/'F'.", 
+        clearList: "Clear List", save: "Save", addNew: "+ New", confirm: "Confirm", 
+        clearMsg: "Clear all history?", yes: "Clear", no: "Cancel", 
+        delClassMsg: "Delete this class?",
+        clearListMsg: "Clear all names in this list?",
+        data: "Data Management", export: "Export Data", import: "Import Data",
+        exportDesc: "Save all settings", importDesc: "Restore from file",
+        studentList: "Student List", winners: "WINNERS", clear: "Clear", ready: "READY", start: "START",
+        tooltips: { drum: "Slot", roulette: "Roulette", garagara: "Garagara" }
+    }
+};
+
+const defaultData = {
+    classes: [
+        { 
+            id: 'cls_demo', name: '3年B組 (デモ)', theme: 'blue',
+            students: [
+                {name: '相川 翔太', gender: 'M'}, {name: '井上 真央', gender: 'F'}, 
+                {name: '宇野 昌磨', gender: 'M'}, {name: '江藤 美咲', gender: 'F'}, 
+                {name: '太田 光', gender: 'M'}, {name: '加藤 あや', gender: 'F'},
+                {name: '木村 拓哉', gender: 'M'}, {name: '工藤 静香', gender: 'F'},
+                {name: '佐藤 健', gender: 'M'}, {name: '鈴木 亮平', gender: 'M'}
+            ],
+            history: [], absent: []
+        }
+    ],
+    currentClassId: 'cls_demo',
+    settings: { sound: true, animation: 'drum', lang: 'ja' }
+};
+
+let appState = JSON.parse(localStorage.getItem('classPickerDataV21')) || defaultData;
+appState.classes.forEach(c => { 
+    if(!c.theme) c.theme = 'blue';
+    if(typeof c.students[0] === 'string') {
+        c.students = c.students.map(s => ({ name: s, gender: 'N' }));
+    }
+});
+
+let pickCount = 1;
+let isAnimating = false;
+let selectionQueue = [];
+let isMultiPickSession = false; 
+let editingClassId = null;
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+    if (!appState.settings.sound) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(e=>{});
+    try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+
+        if (type === 'tick') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(150, now + 0.04); gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04); osc.start(); osc.stop(now + 0.05);
+        } else if (type === 'wood') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1); osc.start(); osc.stop(now + 0.1);
+        } else if (type === 'win') {
+            [523.25, 659.25, 783.99, 1046.50].forEach((f,i) => {
+                const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'sine'; o.frequency.value = f;
+                g.gain.setValueAtTime(0.05, now + i*0.05); g.gain.exponentialRampToValueAtTime(0.001, now + i*0.05 + 2.0); o.start(now + i*0.05); o.stop(now + i*0.05 + 2.0);
+            });
+        }
+    } catch (e) {}
+}
+
+const els = {
+    classSelector: document.getElementById('classSelector'),
+    studentList: document.getElementById('studentListContainer'),
+    winnersList: document.getElementById('winnersContainer'),
+    canvas: document.getElementById('animCanvas'),
+    pickBtn: document.getElementById('pickBtn'),
+    resultName: document.getElementById('resultName'),
+    settingsModal: document.getElementById('settingsModal'),
+    cntValue: document.getElementById('cntValue'),
+    tabs: document.querySelectorAll('.tab-btn'),
+    sidebar: document.getElementById('sidebar'),
+    soundBtn: document.getElementById('soundBtn'),
+    settingsBtn: document.getElementById('settingsBtn'),
+    quickLangBtn: document.getElementById('quickLangBtn'),
+    toggleSidebarBtn: document.getElementById('toggleSidebarBtn'),
+    clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+    saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+    clearListBtn: document.getElementById('clearListBtn'),
+    confirmModal: document.getElementById('confirmModal'),
+    confirmMessage: document.getElementById('confirmMessage'),
+    doConfirmBtn: document.getElementById('doConfirmBtn'),
+    cancelConfirmBtn: document.getElementById('cancelConfirmBtn'),
+    themeSelector: document.getElementById('themeSelector'),
+    classTabs: document.getElementById('classTabs'),
+    classNameInput: document.getElementById('classNameInput'),
+    nameListInput: document.getElementById('nameListInput'),
+    exportBtn: document.getElementById('exportBtn'),
+    importBtn: document.getElementById('importBtn'),
+    importInput: document.getElementById('importInput'),
+    // new text elements
+    studentListTitle: document.getElementById('studentListTitle'),
+    winnersTitle: document.getElementById('winnersTitle')
+};
+
+function saveData() { localStorage.setItem('classPickerDataV21', JSON.stringify(appState)); }
+function getCurrentClass() { return appState.classes.find(c => c.id === appState.currentClassId); }
+function getCandidates(cls) { return cls.students.filter(s => !cls.absent.includes(s.name) && !cls.history.includes(s.name)); }
+
+function applyTheme(themeKey) {
+    const t = themes[themeKey] || themes.blue;
+    const r = document.documentElement.style;
+    r.setProperty('--bg-color', t.bg);
+    r.setProperty('--text-main', t.main);
+    r.setProperty('--text-sub', t.sub);
+    r.setProperty('--btn-primary', t.btn);
+}
+
+function render() {
+    const cls = getCurrentClass();
+    const lang = appState.settings.lang;
+    const t = texts[lang];
+    applyTheme(cls.theme);
+
+    // Text Updates
+    els.quickLangBtn.querySelector('.lang-text').textContent = lang === 'ja' ? 'JP' : 'EN';
+    els.studentListTitle.textContent = t.studentList;
+    document.querySelector('.winners-title span').textContent = t.winners;
+    els.clearHistoryBtn.textContent = t.clear;
+    els.pickBtn.textContent = t.start;
+    if(!isAnimating) els.resultName.textContent = t.ready;
+
+    // Tooltips
+    const animKeys = ['drum', 'roulette', 'garagara'];
+    els.tabs.forEach((tab, i) => {
+        tab.setAttribute('data-tooltip', t.tooltips[animKeys[i]]);
+        if(tab.dataset.anim === appState.settings.animation) tab.classList.add('active');
+        else tab.classList.remove('active');
+    });
+
+    els.classSelector.innerHTML = '';
+    appState.classes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id; opt.textContent = c.name;
+        if(c.id === appState.currentClassId) opt.selected = true;
+        els.classSelector.appendChild(opt);
+    });
+
+    els.studentList.innerHTML = '';
+    cls.students.forEach(s => {
+        const isAbsent = cls.absent.includes(s.name);
+        const isPicked = cls.history.includes(s.name);
+        const div = document.createElement('div');
+        div.className = `student-item ${isAbsent ? 'absent' : ''} ${isPicked ? 'picked' : ''}`;
+        if (s.gender === 'M') div.classList.add('male');
+        if (s.gender === 'F') div.classList.add('female');
+        div.innerHTML = `<div class="checkbox"></div><span>${s.name}</span>`;
+        div.onclick = () => {
+            if(isAnimating) return;
+            if(isAbsent) cls.absent = cls.absent.filter(n => n !== s.name);
+            else cls.absent.push(s.name);
+            saveData(); render();
+        };
+        els.studentList.appendChild(div);
+    });
+
+    els.winnersList.innerHTML = '';
+    cls.history.forEach((name, idx) => {
+        const studentObj = cls.students.find(s => s.name === name) || { gender: 'N' };
+        const div = document.createElement('div');
+        div.className = 'winner-card';
+        if (studentObj.gender === 'M') div.classList.add('male');
+        if (studentObj.gender === 'F') div.classList.add('female');
+        div.innerHTML = `<div class="order">#${idx + 1}</div><div class="name">${name}</div>`;
+        els.winnersList.appendChild(div);
+    });
+
+    document.getElementById('countDisplay').textContent = `${getCandidates(cls).length} / ${cls.students.length}`;
+    
+    const soundPath = appState.settings.sound 
+        ? "M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"
+        : "M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.53C15.58,18.04 14.83,18.46 14,18.7V20.77C15.38,20.45 16.63,19.82 17.68,18.96L19.73,21L21,19.73L12,10.73M19,12C19,12.94 18.8,13.82 18.46,14.64L19.97,16.15C20.62,14.91 21,13.5 21,12C21,7.72 18,4.14 14,3.23V5.29C16.89,6.15 19,8.83 19,12M16.5,12C16.5,10.23 15.5,8.71 14,7.97V10.18L16.45,12.63C16.5,12.43 16.5,12.21 16.5,12Z";
+    els.soundBtn.querySelector('path').setAttribute('d', soundPath);
+
+    if (!isAnimating) drawIdle();
+}
+
+function drawIdle() {
+    const ctx = els.canvas.getContext('2d');
+    const w = els.canvas.width; const h = els.canvas.height;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0,0,w,h);
+    const anim = appState.settings.animation;
+    const cx = w/2; const cy = h/2;
+
+    if (anim === 'drum') {
+        ctx.font = "bold 60px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillText("SLOT", cx, cy);
+    } else if (anim === 'roulette') {
+        const radius = 220;
+        for(let i=0; i<6; i++) {
+            ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,radius, i*Math.PI/3, (i+1)*Math.PI/3);
+            ctx.fillStyle = ['#FCA5A5', '#6EE7B7', '#FDE047', '#93C5FD', '#C4B5FD', '#FDBA74'][i];
+            ctx.fill(); ctx.stroke();
+        }
+        ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.moveTo(cx, cy-radius+30); ctx.moveTo(cx-20, cy-radius-10); ctx.moveTo(cx+20, cy-radius-10); ctx.arc(cx, cy-radius-10, 20, Math.PI, 0); ctx.fill();
+    } else if (anim === 'garagara') {
+        drawGaragaraMachine(ctx, cx, cy, 0);
+    }
+}
+
+function drawGaragaraMachine(ctx, cx, cy, rotation) {
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(cx - 140, cy, 20, 180); ctx.fillRect(cx + 120, cy, 20, 180); ctx.fillRect(cx - 160, cy + 180, 320, 20);
+    ctx.fillStyle = '#e2e8f0'; ctx.fillRect(cx + 80, cy + 160, 120, 40);
+    ctx.fillStyle = '#94a3b8'; ctx.fillRect(cx + 80, cy + 160, 10, 40); ctx.fillRect(cx + 190, cy + 160, 10, 40);
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotation);
+    ctx.beginPath();
+    for (let i = 0; i <= 8; i++) { const theta = i * 2 * Math.PI / 8; ctx.lineTo(120 * Math.cos(theta), 120 * Math.sin(theta)); }
+    ctx.fillStyle = '#d97706'; ctx.fill(); ctx.strokeStyle = '#fcd34d'; ctx.lineWidth = 5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,0, 40, 0, Math.PI*2); ctx.fillStyle = '#b45309'; ctx.fill();
+    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(110, -15, 30, 30);
+    ctx.restore();
+}
+
+els.pickBtn.onclick = () => {
+    if (isAnimating) return;
+    const cls = getCurrentClass(); const pool = getCandidates(cls);
+    if (pool.length === 0) { alert(appState.settings.lang === 'ja' ? "対象者がいません。" : "No candidates."); return; }
+    
+    const count = Math.min(pickCount, pool.length);
+    if (count === 0) return;
+
+    selectionQueue = []; let tempPool = [...pool];
+    for (let i = 0; i < count; i++) {
+        const randIdx = Math.floor(Math.random() * tempPool.length);
+        selectionQueue.push(tempPool[randIdx]); tempPool.splice(randIdx, 1);
+    }
+
+    isAnimating = true; isMultiPickSession = false; els.pickBtn.disabled = true; els.resultName.textContent = "";
+    processQueue(pool);
+};
+
+function processQueue(displayPool) {
+    if (selectionQueue.length === 0) { isAnimating = false; isMultiPickSession = false; els.pickBtn.disabled = false; return; }
+    const nextWinner = selectionQueue.shift();
+    const anim = appState.settings.animation;
+    const ctx = els.canvas.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); els.resultName.textContent = "";
+
+    if (anim === 'drum') playDrum(displayPool, nextWinner);
+    else if (anim === 'roulette') playRoulette(displayPool, nextWinner);
+    else if (anim === 'garagara') playGaragara(displayPool, nextWinner);
+}
+
+function onOneFinished(winner) {
+    const cls = getCurrentClass(); cls.history.push(winner.name); saveData(); render(); playSound('win');
+    isMultiPickSession = true;
+    if (appState.settings.animation === 'drum') els.resultName.textContent = ""; else els.resultName.textContent = winner.name;
+    setTimeout(() => {
+        if (selectionQueue.length > 0) { const updatedPool = getCandidates(cls); processQueue(updatedPool.length ? updatedPool : [winner]); }
+        else { isAnimating = false; els.pickBtn.disabled = false; }
+    }, 2500); 
+}
+
+// 1. SLOT
+function playDrum(pool, winner) {
+    const ctx = els.canvas.getContext('2d'); const width = els.canvas.width; const height = els.canvas.height;
+    function createNonRepeatingStrip(p, repeats) {
+        let res = []; for(let k=0; k<repeats; k++) {
+            let chunk = [...p].sort(()=>Math.random()-0.5);
+            if (res.length > 0 && chunk[0].name === res[res.length-1].name) { if (chunk.length > 1) { const t = chunk[0]; chunk[0] = chunk[chunk.length-1]; chunk[chunk.length-1] = t; } }
+            res = res.concat(chunk);
+        } return res;
+    }
+    let strip = createNonRepeatingStrip(pool, 5);
+    const winIndex = Math.floor(strip.length * 0.8); strip[winIndex] = winner; 
+    if (winIndex > 0 && strip[winIndex-1].name === winner.name) strip[winIndex-1] = pool.find(s=>s.name!==winner.name) || winner;
+    if (winIndex < strip.length-1 && strip[winIndex+1].name === winner.name) strip[winIndex+1] = pool.find(s=>s.name!==winner.name) || winner;
+
+    const itemHeight = 140; let scrollY = 0; let speed = 60; let state = 'spinning'; let frame = 0;
+    const patterns = [{ friction: 0.97 }, { friction: 0.95 }, { friction: 0.98 }, { friction: 0.96 }, { friction: 0.985 }];
+    const pat = patterns[Math.floor(Math.random() * patterns.length)];
+    let targetY = (winIndex * itemHeight) - (height/2) + (itemHeight/2);
+
+    const loop = () => {
+        ctx.clearRect(0,0,width,height);
+        if (state === 'spinning') { scrollY += speed; if (scrollY > targetY - 1500) state = 'slowing'; }
+        else if (state === 'slowing') {
+            speed *= pat.friction;
+            const dist = targetY - scrollY;
+            if (dist < 500) speed = Math.max(dist * 0.08, 0.5); 
+            scrollY += speed;
+            if (dist < 1) { scrollY = targetY; state = 'stopping'; }
+        }
+        
+        const isStopped = (state === 'stopping');
+        if (isStopped) { onOneFinished(winner); }
+
+        const startIdx = Math.floor(scrollY / itemHeight);
+        for (let i = startIdx - 2; i < startIdx + 8; i++) {
+            if (i >= 0 && i < strip.length) {
+                const item = strip[i]; const drawY = (i * itemHeight) - scrollY;
+                if (drawY > -itemHeight && drawY < height) {
+                    const distFromCenter = Math.abs(drawY + itemHeight/2 - height/2);
+                    let scale = 1.0; let alpha = 1.0;
+                    if (isStopped) {
+                        if (distFromCenter < 50) { scale = 1.5; ctx.fillStyle = (item.gender==='M') ? '#059669' : (item.gender==='F'?'#7C3AED':'#2F5D62'); }
+                        else { scale = 0.8; alpha = 0.4; ctx.fillStyle = '#64748b'; }
+                    } else { ctx.fillStyle = (item.gender==='M') ? '#059669' : (item.gender==='F'?'#7C3AED':'#2F5D62'); }
+                    ctx.save(); ctx.translate(width/2, drawY + itemHeight/2); ctx.scale(scale, scale); ctx.globalAlpha = alpha;
+                    ctx.font = "bold 50px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    if (!isStopped && speed > 10) ctx.filter = `blur(${speed/10}px)`;
+                    ctx.fillText(item.name, 0, 0); ctx.restore();
+                }
+            }
+        }
+        if (!isStopped) { frame++; if (frame%5===0 && speed>5) playSound('tick'); requestAnimationFrame(loop); }
+    };
+    loop();
+}
+
+// 2. ROULETTE
+function playRoulette(pool, winner) {
+    const ctx = els.canvas.getContext('2d'); const cx = els.canvas.width/2; const cy = els.canvas.height/2; const radius = 220;
+    
+    let displaySlices = pool.length; if(displaySlices > 24) displaySlices = 24;
+    const sliceAngle = (2*Math.PI)/displaySlices;
+    const colors = ['#FCA5A5', '#6EE7B7', '#FDE047', '#93C5FD', '#C4B5FD', '#FDBA74'];
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--btn-primary').trim();
+
+    let targetRotation = (3*Math.PI/2) - (sliceAngle/2) + (Math.random()-0.5)*(sliceAngle*0.9); 
+    const totalRotation = (3*2*Math.PI) + targetRotation;
+    let currentRotation = 0; let progress = 0;
+    const startZoom = isMultiPickSession ? 1.5 : 1.0; const endZoom = 1.5;
+    const startTransY = isMultiPickSession ? 150 : 0; const endTransY = 150;
+
+    const speeds = [0.005, 0.007, 0.009, 0.006, 0.004];
+    const speed = speeds[Math.floor(Math.random() * speeds.length)];
+
+    const animLoop = () => {
+        progress += speed; if (progress > 1) progress = 1;
+        const ease = 1 - Math.pow(1 - progress, 3);
+        currentRotation = totalRotation * ease;
+        const zoom = startZoom + (endZoom - startZoom) * ease;
+        const transY = startTransY + (endTransY - startTransY) * ease;
+        
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
+        ctx.translate(cx, cy + transY); ctx.scale(zoom, zoom); ctx.rotate(currentRotation);
+        
+        for(let i=0; i<displaySlices; i++) {
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0, radius, i*sliceAngle, (i+1)*sliceAngle);
+            ctx.fillStyle = colors[i % colors.length]; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+            
+            ctx.save(); ctx.rotate(i*sliceAngle + sliceAngle/2); ctx.textAlign = "right"; ctx.fillStyle = "#2F5D62"; ctx.font = "bold 14px Arial";
+            let text = (i === 0) ? winner.name : (pool[i] ? pool[i].name : "...");
+            ctx.fillText(text, radius - 10, 5); ctx.restore();
+        }
+        ctx.beginPath(); ctx.arc(0,0, 30, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill();
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        const visualTop = cy + transY - (radius * zoom);
+        ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(cx, visualTop+10, 8, 4, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = themeColor; ctx.beginPath(); ctx.arc(cx, visualTop - 25, 20, Math.PI, 0); ctx.lineTo(cx, visualTop + 10); ctx.lineTo(cx - 20, visualTop - 25); ctx.fill();
+        ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, visualTop - 25, 8, 0, Math.PI*2); ctx.fill();
+
+        if (progress < 1) { if (Math.random() < 0.15) playSound('tick'); requestAnimationFrame(animLoop); }
+        else { els.resultName.textContent = winner.name; onOneFinished(winner); }
+    };
+    animLoop();
+}
+
+// 3. GARAGARA
+function playGaragara(pool, winner) {
+    const ctx = els.canvas.getContext('2d'); const cx = els.canvas.width/2; const cy = els.canvas.height/2;
+    let frame = 0; let ballReleased = false; let ball = { x: 0, y: 0, vx: 5, vy: -5 };
+    const startZoom = isMultiPickSession ? 1.8 : 1.0; const endZoom = 1.8;
+    const startTransX = isMultiPickSession ? -100 : 0; const endTransX = -100;
+    const startTransY = isMultiPickSession ? -100 : 0; const endTransY = -100;
+
+    const loop = () => {
+        frame++;
+        let progress = Math.min(frame / 80, 1); let ease = 1 - Math.pow(1 - progress, 3);
+        let zoom = startZoom + (endZoom - startZoom) * ease;
+        let transX = startTransX + (endTransX - startTransX) * ease;
+        let transY = startTransY + (endTransY - startTransY) * ease;
+        const rotation = frame * 0.15;
+        
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0,0, els.canvas.width, els.canvas.height);
+        ctx.translate(cx + transX, cy + transY); ctx.scale(zoom, zoom); ctx.translate(-cx, -cy); 
+
+        drawGaragaraMachine(ctx, cx, cy, rotation);
+
+        if (frame > 90 && !ballReleased) { ballReleased = true; ball.x = cx + 130; ball.y = cy; playSound('wood'); }
+
+        if (ballReleased) {
+            ball.vy += 0.5; ball.x += ball.vx; ball.y += ball.vy;
+            if (ball.y > cy + 180 - 15) { ball.y = cy + 180 - 15; ball.vy *= -0.4; ball.vx *= 0.8; }
+            if (ball.x > cx + 190 - 15) { ball.x = cx + 190 - 15; ball.vx *= -0.5; }
+
+            ctx.beginPath(); ctx.arc(ball.x, ball.y, 25, 0, Math.PI*2);
+            ctx.fillStyle = (winner.gender === 'M') ? '#059669' : (winner.gender === 'F' ? '#7C3AED' : '#EF4444');
+            ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+            
+            ctx.fillStyle = 'white'; let fontSize = 12; if (winner.name.length > 5) fontSize = 8; else if (winner.name.length > 3) fontSize = 10;
+            ctx.font = `bold ${fontSize}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(winner.name, ball.x, ball.y);
+
+            if (frame > 220) { els.resultName.textContent = winner.name; onOneFinished(winner); return; }
+        } else { if (frame % 15 === 0) playSound('wood'); }
+        requestAnimationFrame(loop);
+    };
+    loop();
+}
+
+// --- EVENTS ---
+els.toggleSidebarBtn.onclick = () => els.sidebar.classList.toggle('collapsed');
+els.clearHistoryBtn.onclick = () => {
+    const cls = getCurrentClass(); const lang = appState.settings.lang || 'ja';
+    if (cls.history.length === 0) return;
+    const t = texts[lang];
+    els.confirmMessage.textContent = t.clearMsg;
+    els.doConfirmBtn.textContent = t.yes;
+    els.cancelConfirmBtn.textContent = t.no;
+    els.doConfirmBtn.onclick = () => { cls.history = []; saveData(); render(); els.confirmModal.classList.remove('active'); };
+    els.cancelConfirmBtn.onclick = () => { els.confirmModal.classList.remove('active'); };
+    els.confirmModal.classList.add('active');
+};
+els.quickLangBtn.onclick = () => { 
+    appState.settings.lang = appState.settings.lang === 'ja' ? 'en' : 'ja'; 
+    saveData(); 
+    render(); 
+    // If settings modal is open, re-render it to update texts
+    if(els.settingsModal.classList.contains('active')) {
+        renderSettings();
+        // Maintain form state if needed, or simple re-open for simplicity
+    }
+};
+document.getElementById('cntMinus').onclick = () => { if(pickCount > 1) { pickCount--; els.cntValue.textContent = pickCount; }};
+document.getElementById('cntPlus').onclick = () => { if(pickCount < 5) { pickCount++; els.cntValue.textContent = pickCount; }};
+els.tabs.forEach(tab => { 
+    tab.onclick = () => { 
+        if(isAnimating) return; 
+        appState.settings.animation = tab.dataset.anim; 
+        saveData(); 
+        render(); 
+    }; 
+});
+
+// SETTINGS & TABS LOGIC
+function renderSettings() {
+    els.classTabs.innerHTML = '';
+    const t = texts[appState.settings.lang];
+    
+    // Update labels inside modal
+    document.getElementById('settingsTitle').textContent = t.settings;
+    document.getElementById('classNameLabel').textContent = t.class;
+    document.getElementById('themeLabel').textContent = t.theme;
+    document.getElementById('listLabel').textContent = t.list;
+    document.getElementById('listHelp').innerHTML = t.help;
+    document.getElementById('clearListBtn').textContent = t.clearList;
+    document.getElementById('saveSettingsBtn').textContent = t.save;
+    document.getElementById('dataLabel').textContent = t.data;
+    document.getElementById('exportText').textContent = t.export;
+    document.getElementById('importText').textContent = t.import;
+    document.getElementById('exportDesc').textContent = t.exportDesc;
+    document.getElementById('importDesc').textContent = t.importDesc;
+
+    appState.classes.forEach(c => {
+        const tab = document.createElement('div');
+        tab.className = `class-tab ${editingClassId === c.id ? 'active' : ''}`;
+        tab.textContent = c.name;
+        const classTheme = themes[c.theme] || themes.blue;
+        if (editingClassId === c.id) {
+            tab.style.backgroundColor = classTheme.btn;
+            tab.style.borderColor = classTheme.btn;
+        } else {
+            tab.style.backgroundColor = 'white';
+            tab.style.color = classTheme.btn;
+            tab.style.borderColor = classTheme.btn;
+        }
+        
+        const delBtn = document.createElement('div');
+        delBtn.className = 'tab-delete-btn';
+        delBtn.textContent = '×';
+        delBtn.onclick = (e) => { e.stopPropagation(); confirmDeleteClass(c.id); };
+        tab.appendChild(delBtn);
+        
+        tab.onclick = () => { editingClassId = c.id; loadClassToForm(c.id); renderSettings(); };
+        els.classTabs.appendChild(tab);
+    });
+    
+    const addTab = document.createElement('div');
+    addTab.className = 'class-tab add-new';
+    addTab.textContent = t.addNew;
+    addTab.onclick = () => createNewClass();
+    els.classTabs.appendChild(addTab);
+}
+
+function loadClassToForm(id) {
+    const c = appState.classes.find(cl => cl.id === id);
+    if (!c) return;
+    els.classNameInput.value = c.name;
+    els.nameListInput.value = c.students.map(s => {
+        let suffix = ''; if(s.gender === 'M') suffix = ' 男'; else if(s.gender === 'F') suffix = ' 女';
+        return s.name + suffix;
+    }).join('\n');
+    
+    els.themeSelector.innerHTML = '';
+    const currentClassTheme = c.theme || 'blue';
+    Object.keys(themes).forEach(key => {
+        const t = themes[key]; const div = document.createElement('div');
+        div.className = `theme-opt ${currentClassTheme === key ? 'selected' : ''}`;
+        div.style.backgroundColor = t.bg; div.style.borderColor = t.main;
+        div.onclick = () => { 
+            c.theme = key; saveData(); renderSettings(); loadClassToForm(id); if(id === appState.currentClassId) render(); 
+        };
+        els.themeSelector.appendChild(div);
+    });
+}
+
+function createNewClass() {
+    const newId = 'cls_' + Date.now();
+    const newClass = { id: newId, name: appState.settings.lang === 'ja' ? '新規クラス' : 'New Class', students: [], history: [], absent: [], theme: 'blue' };
+    appState.classes.push(newClass);
+    editingClassId = newId; appState.currentClassId = newId;
+    saveData(); render(); renderSettings(); loadClassToForm(newId);
+}
+
+function confirmDeleteClass(id) {
+    if (appState.classes.length <= 1) { 
+        alert(appState.settings.lang === 'ja' ? "最後のクラスは削除できません" : "Cannot delete last class"); return; 
+    }
+    const t = texts[appState.settings.lang];
+    els.confirmMessage.textContent = t.delClassMsg;
+    // Set explicit onclick for confirm modal action
+    els.doConfirmBtn.onclick = () => {
+        appState.classes = appState.classes.filter(c => c.id !== id);
+        if (appState.currentClassId === id) appState.currentClassId = appState.classes[0].id;
+        if (editingClassId === id) editingClassId = appState.currentClassId;
+        saveData(); render(); renderSettings(); loadClassToForm(editingClassId);
+        els.confirmModal.classList.remove('active');
+    };
+    els.cancelConfirmBtn.onclick = () => { els.confirmModal.classList.remove('active'); };
+    els.confirmModal.classList.add('active');
+}
+
+// Clear List
+els.clearListBtn.onclick = () => {
+    const t = texts[appState.settings.lang];
+    els.confirmMessage.textContent = t.clearListMsg;
+    els.doConfirmBtn.onclick = () => {
+        const cls = appState.classes.find(c => c.id === editingClassId);
+        if(cls) { cls.students = []; els.nameListInput.value = ""; saveData(); render(); }
+        els.confirmModal.classList.remove('active');
+    };
+    els.cancelConfirmBtn.onclick = () => { els.confirmModal.classList.remove('active'); };
+    els.confirmModal.classList.add('active');
+};
+
+// Export/Import
+els.exportBtn.onclick = () => {
+    const dataStr = JSON.stringify(appState);
+    const blob = new Blob([dataStr], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = "class-picker-backup.json";
+    a.click();
+};
+els.importBtn.onclick = () => { els.importInput.click(); };
+els.importInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(data.classes && Array.isArray(data.classes)) {
+                appState = data;
+                if(!appState.currentClassId || !appState.classes.find(c=>c.id===appState.currentClassId)) {
+                    appState.currentClassId = appState.classes[0].id;
+                }
+                saveData(); render(); renderSettings(); loadClassToForm(editingClassId);
+                alert(appState.settings.lang === 'ja' ? "インポート完了" : "Import Complete");
+            } else { alert("Invalid File"); }
+        } catch(err) { alert("Error loading file"); }
+    };
+    reader.readAsText(file);
+    els.importInput.value = '';
+};
+
+els.saveSettingsBtn.onclick = () => {
+    const cls = appState.classes.find(c => c.id === editingClassId);
+    if (!cls) return;
+    const nameText = document.getElementById('nameListInput').value;
+    cls.students = nameText.split('\n').map(l => l.trim()).filter(l => l).map(l => {
+        let g = 'N', n = l;
+        const match = l.match(/\s*(男|M|m|女|F|f)$/);
+        if (match) {
+            const marker = match[1];
+            if (['男', 'M', 'm'].includes(marker)) g = 'M';
+            else if (['女', 'F', 'f'].includes(marker)) g = 'F';
+            n = l.substring(0, match.index).trim();
+        }
+        return { name: n, gender: g };
+    });
+    cls.name = document.getElementById('classNameInput').value;
+    const allNames = cls.students.map(s => s.name); 
+    cls.history = cls.history.filter(h => allNames.includes(h)); 
+    cls.absent = cls.absent.filter(a => allNames.includes(a));
+    appState.currentClassId = editingClassId;
+    saveData(); render(); els.settingsModal.classList.remove('active');
+};
+
+els.settingsBtn.onclick = () => {
+    editingClassId = appState.currentClassId; renderSettings(); loadClassToForm(editingClassId);
+    els.settingsModal.classList.add('active');
+};
+els.soundBtn.onclick = () => { appState.settings.sound = !appState.settings.sound; saveData(); render(); };
+els.settingsModal.onclick = (e) => { if(e.target === els.settingsModal) els.settingsModal.classList.remove('active'); };
+els.classSelector.onchange = (e) => { appState.currentClassId = e.target.value; saveData(); render(); };
+
+render();
+</script>
+</body>
+</html>
