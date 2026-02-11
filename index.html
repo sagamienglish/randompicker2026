@@ -460,7 +460,7 @@
 
 <script>
 /**
- * Class Picker Pro - v23.0
+ * Class Picker Pro - v24.0 (Quick Slot & Increased Limit)
  */
 
 const themes = {
@@ -770,8 +770,11 @@ function playDrum(pool, winner) {
             res = res.concat(chunk);
         } return res;
     }
-    let strip = createNonRepeatingStrip(pool, 5);
-    const winIndex = Math.floor(strip.length * 0.8); strip[winIndex] = winner; 
+    // Reduced repeat and threshold for quicker result
+    let strip = createNonRepeatingStrip(pool, 4); 
+    const winIndex = Math.floor(strip.length * 0.5); // Bring target closer (50% instead of 80%)
+    
+    strip[winIndex] = winner; 
     if (winIndex > 0 && strip[winIndex-1].name === winner.name) strip[winIndex-1] = pool.find(s=>s.name!==winner.name) || winner;
     if (winIndex < strip.length-1 && strip[winIndex+1].name === winner.name) strip[winIndex+1] = pool.find(s=>s.name!==winner.name) || winner;
 
@@ -933,7 +936,8 @@ els.quickLangBtn.onclick = () => {
     }
 };
 document.getElementById('cntMinus').onclick = () => { if(pickCount > 1) { pickCount--; els.cntValue.textContent = pickCount; }};
-document.getElementById('cntPlus').onclick = () => { if(pickCount < 5) { pickCount++; els.cntValue.textContent = pickCount; }};
+// Increased Limit to 30
+document.getElementById('cntPlus').onclick = () => { if(pickCount < 30) { pickCount++; els.cntValue.textContent = pickCount; }};
 els.tabs.forEach(tab => { 
     tab.onclick = () => { 
         if(isAnimating) return; 
