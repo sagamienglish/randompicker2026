@@ -7,9 +7,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Class Picker">
     
-    <!-- Home Screen Icon & Favicon (Roulette Design) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%232F5D62'/%3E%3Cpath d='M256 256 L256 40 A216 216 0 0 1 472 256 Z' fill='%23EF4444'/%3E%3Cpath d='M256 256 L472 256 A216 216 0 0 1 256 472 Z' fill='%23F59E0B'/%3E%3Cpath d='M256 256 L256 472 A216 216 0 0 1 40 256 Z' fill='%2310B981'/%3E%3Cpath d='M256 256 L40 256 A216 216 0 0 1 256 40 Z' fill='%233B82F6'/%3E%3Ccircle cx='256' cy='256' r='40' fill='white'/%3E%3Cpath d='M256 20 L230 60 L282 60 Z' fill='white' stroke='%23333' stroke-width='4'/%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%232F5D62'/%3E%3Cpath d='M256 256 L256 40 A216 216 0 0 1 472 256 Z' fill='%23EF4444'/%3E%3Cpath d='M256 256 L472 256 A216 216 0 0 1 256 472 Z' fill='%23F59E0B'/%3E%3Cpath d='M256 256 L256 472 A216 216 0 0 1 40 256 Z' fill='%2310B981'/%3E%3Cpath d='M256 256 L40 256 A216 216 0 0 1 256 40 Z' fill='%233B82F6'/%3E%3Ccircle cx='256' cy='256' r='40' fill='white'/%3E%3C/svg%3E">
+    <!-- Placeholder Icons (Updated by JS to PNG for iOS support) -->
+    <link rel="apple-touch-icon" id="appleIcon" href="">
+    <link rel="icon" id="favIcon" href="">
 
     <title>Class Picker</title>
     <style>
@@ -359,7 +359,7 @@
             <canvas id="animCanvas" width="900" height="700"></canvas>
             
             <div class="result-wrapper">
-                <div class="result-name" id="resultName">READY</div>
+                <div class="result-name" id="resultName">READY?</div>
             </div>
             
             <div class="control-panel">
@@ -460,7 +460,7 @@
 
 <script>
 /**
- * Class Picker Pro - v22.0
+ * Class Picker Pro - v23.0
  */
 
 const themes = {
@@ -481,7 +481,7 @@ const texts = {
         clearListMsg: "入力されている名簿をすべて消去しますか？",
         data: "データ移行", export: "ファイルに保存", import: "ファイルを読み込み",
         exportDesc: "設定を保存します", importDesc: "設定を復元します",
-        studentList: "生徒リスト", winners: "WINNERS", clear: "クリア", ready: "READY", start: "スタート",
+        studentList: "生徒リスト", winners: "WINNERS", clear: "クリア", ready: "READY?", start: "スタート",
         tooltips: { drum: "スロット", roulette: "ルーレット", garagara: "ガラガラ" }
     },
     en: { 
@@ -493,7 +493,7 @@ const texts = {
         clearListMsg: "Clear all names in this list?",
         data: "Data Management", export: "Export Data", import: "Import Data",
         exportDesc: "Save all settings", importDesc: "Restore from file",
-        studentList: "Student List", winners: "WINNERS", clear: "Clear", ready: "READY", start: "START",
+        studentList: "Student List", winners: "WINNERS", clear: "Clear", ready: "READY?", start: "START",
         tooltips: { drum: "Slot", roulette: "Roulette", garagara: "Garagara" }
     }
 };
@@ -584,6 +584,28 @@ const els = {
     studentListTitle: document.getElementById('studentListTitle'),
     winnersTitle: document.getElementById('winnersTitle')
 };
+
+// Generate PNG Icon on load for iOS
+function generateIcon() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    const cx = 256, cy = 256, r = 256;
+    const colors = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6'];
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#2F5D62'; ctx.fill();
+    for(let i=0; i<4; i++) {
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, i*Math.PI/2, (i+1)*Math.PI/2);
+        ctx.fillStyle = colors[i]; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, 40, 0, Math.PI * 2); ctx.fillStyle = 'white'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(256, 20); ctx.lineTo(230, 60); ctx.lineTo(282, 60); ctx.closePath();
+    ctx.fillStyle = 'white'; ctx.strokeStyle = '#333'; ctx.lineWidth = 10; ctx.fill(); ctx.stroke();
+    
+    const url = canvas.toDataURL('image/png');
+    document.getElementById('appleIcon').href = url;
+    document.getElementById('favIcon').href = url;
+}
+window.addEventListener('load', generateIcon);
 
 function saveData() { localStorage.setItem('classPickerDataV22', JSON.stringify(appState)); }
 function getCurrentClass() { return appState.classes.find(c => c.id === appState.currentClassId); }
