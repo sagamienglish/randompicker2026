@@ -6,9 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Class Picker">
-    <!-- Home Screen Icon (Simple SVG Data URI) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%232F5D62'%3E%3Crect width='100%25' height='100%25' fill='%232F5D62'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='250' fill='white'%3ECP%3C/text%3E%3C/svg%3E">
     
+    <!-- Home Screen Icon & Favicon (Roulette Design) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%232F5D62'/%3E%3Cpath d='M256 256 L256 40 A216 216 0 0 1 472 256 Z' fill='%23EF4444'/%3E%3Cpath d='M256 256 L472 256 A216 216 0 0 1 256 472 Z' fill='%23F59E0B'/%3E%3Cpath d='M256 256 L256 472 A216 216 0 0 1 40 256 Z' fill='%2310B981'/%3E%3Cpath d='M256 256 L40 256 A216 216 0 0 1 256 40 Z' fill='%233B82F6'/%3E%3Ccircle cx='256' cy='256' r='40' fill='white'/%3E%3Cpath d='M256 20 L230 60 L282 60 Z' fill='white' stroke='%23333' stroke-width='4'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%232F5D62'/%3E%3Cpath d='M256 256 L256 40 A216 216 0 0 1 472 256 Z' fill='%23EF4444'/%3E%3Cpath d='M256 256 L472 256 A216 216 0 0 1 256 472 Z' fill='%23F59E0B'/%3E%3Cpath d='M256 256 L256 472 A216 216 0 0 1 40 256 Z' fill='%2310B981'/%3E%3Cpath d='M256 256 L40 256 A216 216 0 0 1 256 40 Z' fill='%233B82F6'/%3E%3Ccircle cx='256' cy='256' r='40' fill='white'/%3E%3C/svg%3E">
+
     <title>Class Picker</title>
     <style>
         :root {
@@ -206,7 +208,10 @@
 
         .count-selector { display: flex; align-items: center; background: white; border-radius: 30px; padding: 5px; border: 1px solid #e2e8f0; }
         .count-label { margin: 0 8px; display: flex; align-items: center; color: var(--text-sub); }
-        .count-label svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        /* Person Icon */
+        .count-label svg { width: 22px; height: 22px; fill: currentColor; }
+
         .count-btn {
             width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: var(--text-main);
             font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; border: none;
@@ -361,7 +366,7 @@
                 <div class="count-selector" title="人数">
                     <span class="count-label">
                         <!-- People Icon -->
-                        <svg viewBox="0 0 24 24"><path d="M16,11C16,13.76 13.76,16 11,16C8.24,16 6,13.76 6,11C6,8.24 8.24,6 11,6C13.76,6 16,8.24 16,11M11,4C14.87,4 18,7.13 18,11C18,14.87 14.87,18 11,18C7.13,18 4,14.87 4,11C4,7.13 7.13,4 11,4M11,2C6.03,2 2,6.03 2,11C2,15.97 6.03,20 11,20C15.97,20 20,15.97 20,11C20,6.03 15.97,2 11,2Z" /></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12,5.5A3.5,3.5 0 1,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z" /></svg>
                     </span>
                     <button class="count-btn" id="cntMinus">-</button>
                     <div class="count-val" id="cntValue">1</div>
@@ -436,7 +441,7 @@
                         </div>
                         <div class="manage-item">
                             <button id="importBtn" class="manage-btn">
-                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M8,15.06L9.41,13.65L11,15.24V11H13V15.24L14.59,13.65L16,15.06L12,19.06L8,15.06Z" /></svg>
+                                <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" transform="scale(1,-1) translate(0,-24)"/></svg>
                                 <span id="importText">ファイルを読み込み</span>
                             </button>
                             <div class="manage-desc" id="importDesc">設定を復元します</div>
@@ -455,7 +460,7 @@
 
 <script>
 /**
- * Class Picker Pro - v21.0
+ * Class Picker Pro - v22.0
  */
 
 const themes = {
@@ -481,7 +486,7 @@ const texts = {
     },
     en: { 
         settings: "Settings", class: "Class Name", theme: "Theme Color", list: "Student List", 
-        help: "* One name per line.<br>* Auto-gender if line ends with 'M'/'F'.", 
+        help: "* One name per line.<br>* Auto-gender if line ends with 'M'/'F'/'Male'/'Female'.", 
         clearList: "Clear List", save: "Save", addNew: "+ New", confirm: "Confirm", 
         clearMsg: "Clear all history?", yes: "Clear", no: "Cancel", 
         delClassMsg: "Delete this class?",
@@ -511,7 +516,7 @@ const defaultData = {
     settings: { sound: true, animation: 'drum', lang: 'ja' }
 };
 
-let appState = JSON.parse(localStorage.getItem('classPickerDataV21')) || defaultData;
+let appState = JSON.parse(localStorage.getItem('classPickerDataV22')) || defaultData;
 appState.classes.forEach(c => { 
     if(!c.theme) c.theme = 'blue';
     if(typeof c.students[0] === 'string') {
@@ -576,12 +581,11 @@ const els = {
     exportBtn: document.getElementById('exportBtn'),
     importBtn: document.getElementById('importBtn'),
     importInput: document.getElementById('importInput'),
-    // new text elements
     studentListTitle: document.getElementById('studentListTitle'),
     winnersTitle: document.getElementById('winnersTitle')
 };
 
-function saveData() { localStorage.setItem('classPickerDataV21', JSON.stringify(appState)); }
+function saveData() { localStorage.setItem('classPickerDataV22', JSON.stringify(appState)); }
 function getCurrentClass() { return appState.classes.find(c => c.id === appState.currentClassId); }
 function getCandidates(cls) { return cls.students.filter(s => !cls.absent.includes(s.name) && !cls.history.includes(s.name)); }
 
@@ -600,7 +604,6 @@ function render() {
     const t = texts[lang];
     applyTheme(cls.theme);
 
-    // Text Updates
     els.quickLangBtn.querySelector('.lang-text').textContent = lang === 'ja' ? 'JP' : 'EN';
     els.studentListTitle.textContent = t.studentList;
     document.querySelector('.winners-title span').textContent = t.winners;
@@ -608,7 +611,6 @@ function render() {
     els.pickBtn.textContent = t.start;
     if(!isAnimating) els.resultName.textContent = t.ready;
 
-    // Tooltips
     const animKeys = ['drum', 'roulette', 'garagara'];
     els.tabs.forEach((tab, i) => {
         tab.setAttribute('data-tooltip', t.tooltips[animKeys[i]]);
@@ -704,16 +706,13 @@ els.pickBtn.onclick = () => {
     if (isAnimating) return;
     const cls = getCurrentClass(); const pool = getCandidates(cls);
     if (pool.length === 0) { alert(appState.settings.lang === 'ja' ? "対象者がいません。" : "No candidates."); return; }
-    
     const count = Math.min(pickCount, pool.length);
     if (count === 0) return;
-
     selectionQueue = []; let tempPool = [...pool];
     for (let i = 0; i < count; i++) {
         const randIdx = Math.floor(Math.random() * tempPool.length);
         selectionQueue.push(tempPool[randIdx]); tempPool.splice(randIdx, 1);
     }
-
     isAnimating = true; isMultiPickSession = false; els.pickBtn.disabled = true; els.resultName.textContent = "";
     processQueue(pool);
 };
@@ -909,7 +908,6 @@ els.quickLangBtn.onclick = () => {
     // If settings modal is open, re-render it to update texts
     if(els.settingsModal.classList.contains('active')) {
         renderSettings();
-        // Maintain form state if needed, or simple re-open for simplicity
     }
 };
 document.getElementById('cntMinus').onclick = () => { if(pickCount > 1) { pickCount--; els.cntValue.textContent = pickCount; }};
