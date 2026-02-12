@@ -208,10 +208,7 @@
 
         .count-selector { display: flex; align-items: center; background: white; border-radius: 30px; padding: 5px; border: 1px solid #e2e8f0; }
         .count-label { margin: 0 8px; display: flex; align-items: center; color: var(--text-sub); }
-        
-        /* Person Icon */
         .count-label svg { width: 22px; height: 22px; fill: currentColor; }
-
         .count-btn {
             width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: var(--text-main);
             font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; border: none;
@@ -292,9 +289,7 @@
             background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
             display: flex; gap: 15px; align-items: flex-start; margin-top: 10px;
         }
-        .manage-item {
-            flex: 1; text-align: center;
-        }
+        .manage-item { flex: 1; text-align: center; }
         .manage-btn {
             background: white; border: 1px solid #cbd5e1; color: #64748b;
             padding: 10px; border-radius: 8px; font-size: 0.9rem; cursor: pointer;
@@ -404,7 +399,6 @@
         <div class="modal-content">
             <div class="modal-fixed-header">
                 <h2 style="margin-top:0; color:var(--text-main);" id="settingsTitle">設定 (Settings)</h2>
-                <!-- Class Tabs -->
                 <div class="class-tabs-container">
                     <div id="classTabs" class="class-tabs"></div>
                 </div>
@@ -434,14 +428,14 @@
                     <div class="data-manage-area">
                         <div class="manage-item">
                             <button id="exportBtn" class="manage-btn">
-                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L6.2,18.1L11.1,23L16,18.1V11H16Z" /></svg>
+                                <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" transform="scale(1,-1) translate(0,-24)"/></svg>
                                 <span id="exportText">ファイルに保存</span>
                             </button>
                             <div class="manage-desc" id="exportDesc">設定を保存します</div>
                         </div>
                         <div class="manage-item">
                             <button id="importBtn" class="manage-btn">
-                                <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" transform="scale(1,-1) translate(0,-24)"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M8,15.06L9.41,13.65L11,15.24V11H13V15.24L14.59,13.65L16,15.06L12,19.06L8,15.06Z" /></svg>
                                 <span id="importText">ファイルを読み込み</span>
                             </button>
                             <div class="manage-desc" id="importDesc">設定を復元します</div>
@@ -460,9 +454,10 @@
 
 <script>
 /**
- * Class Picker Pro - v24.0 (Quick Slot & Increased Limit)
+ * Class Picker Pro - v25.0 (Critical Fixes, Audio System & Layout)
  */
 
+// --- DATA & THEMES ---
 const themes = {
     blue:   { main: '#2F5D62', sub: '#5C8D89', bg: '#BCE2E8', btn: '#2F5D62' },
     pink:   { main: '#9D4C6C', sub: '#D689A8', bg: '#F8D8E8', btn: '#9D4C6C' },
@@ -519,9 +514,7 @@ const defaultData = {
 let appState = JSON.parse(localStorage.getItem('classPickerDataV22')) || defaultData;
 appState.classes.forEach(c => { 
     if(!c.theme) c.theme = 'blue';
-    if(typeof c.students[0] === 'string') {
-        c.students = c.students.map(s => ({ name: s, gender: 'N' }));
-    }
+    if(typeof c.students[0] === 'string') c.students = c.students.map(s => ({ name: s, gender: 'N' }));
 });
 
 let pickCount = 1;
@@ -530,28 +523,7 @@ let selectionQueue = [];
 let isMultiPickSession = false; 
 let editingClassId = null;
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type) {
-    if (!appState.settings.sound) return;
-    if (audioCtx.state === 'suspended') audioCtx.resume().catch(e=>{});
-    try {
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-
-        if (type === 'tick') {
-            osc.type = 'square'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(150, now + 0.04); gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04); osc.start(); osc.stop(now + 0.05);
-        } else if (type === 'wood') {
-            osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1); osc.start(); osc.stop(now + 0.1);
-        } else if (type === 'win') {
-            [523.25, 659.25, 783.99, 1046.50].forEach((f,i) => {
-                const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'sine'; o.frequency.value = f;
-                g.gain.setValueAtTime(0.05, now + i*0.05); g.gain.exponentialRampToValueAtTime(0.001, now + i*0.05 + 2.0); o.start(now + i*0.05); o.stop(now + i*0.05 + 2.0);
-            });
-        }
-    } catch (e) {}
-}
-
+// --- DOM ELEMENTS ---
 const els = {
     classSelector: document.getElementById('classSelector'),
     studentList: document.getElementById('studentListContainer'),
@@ -585,7 +557,104 @@ const els = {
     winnersTitle: document.getElementById('winnersTitle')
 };
 
-// Generate PNG Icon on load for iOS
+
+// --- AUDIO SYSTEM (HTML Audio Element for iOS AirPlay support) ---
+const audioCache = { tick: [], wood: [], win: [] };
+let audioInitialized = false;
+
+function createWavUri(type) {
+    const sampleRate = 44100;
+    let duration = 0.1;
+    let getSample = (t) => 0;
+
+    if (type === 'tick') {
+        duration = 0.05;
+        getSample = (t) => {
+            const freq = 600 - (t / 0.05) * 450; 
+            const env = Math.exp(-t * 100);
+            return Math.sign(Math.sin(2 * Math.PI * freq * t)) * env * 0.1;
+        };
+    } else if (type === 'wood') {
+        duration = 0.1;
+        getSample = (t) => {
+            const freq = 300;
+            const env = Math.exp(-t * 30);
+            const val = Math.asin(Math.sin(2 * Math.PI * freq * t)) * (2 / Math.PI);
+            return val * env * 0.3;
+        };
+    } else if (type === 'win') {
+        duration = 2.0;
+        const freqs = [523.25, 659.25, 783.99, 1046.50];
+        getSample = (t) => {
+            let val = 0;
+            freqs.forEach((f, i) => {
+                const start = i * 0.05;
+                if (t >= start) {
+                    const env = Math.exp(-(t - start) * 2);
+                    val += Math.sin(2 * Math.PI * f * (t - start)) * env * 0.15;
+                }
+            });
+            return val;
+        };
+    }
+
+    const length = Math.floor(sampleRate * duration);
+    const buffer = new ArrayBuffer(44 + length * 2);
+    const view = new DataView(buffer);
+
+    const writeString = (offset, string) => {
+        for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+    };
+
+    writeString(0, 'RIFF'); view.setUint32(4, 36 + length * 2, true); writeString(8, 'WAVE');
+    writeString(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true); view.setUint16(34, 16, true); writeString(36, 'data'); view.setUint32(40, length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < length; i++) {
+        let s = Math.max(-1, Math.min(1, getSample(i / sampleRate)));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        offset += 2;
+    }
+
+    const bytes = new Uint8Array(buffer); let binary = ''; const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    return 'data:audio/wav;base64,' + btoa(binary);
+}
+
+function initAudioPool() {
+    if (audioInitialized) return;
+    ['tick', 'wood', 'win'].forEach(type => {
+        const uri = createWavUri(type);
+        for(let i=0; i<10; i++) {
+            const a = new Audio(uri); a.load(); audioCache[type].push(a);
+        }
+    });
+    const unlockAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+    unlockAudio.play().catch(()=>{});
+    audioInitialized = true;
+}
+
+document.addEventListener('touchstart', initAudioPool, {once:true});
+document.addEventListener('click', initAudioPool, {once:true});
+
+let poolIndexes = { tick: 0, wood: 0, win: 0 };
+
+function playSound(type) {
+    if (!appState.settings.sound || !audioInitialized) return;
+    try {
+        const pool = audioCache[type];
+        if (pool && pool.length > 0) {
+            const idx = poolIndexes[type] % pool.length;
+            const a = pool[idx]; a.currentTime = 0; a.play().catch(e=>{});
+            poolIndexes[type]++;
+        }
+    } catch(e) {}
+}
+
+
+// --- HOME ICON GENERATOR ---
 function generateIcon() {
     const canvas = document.createElement('canvas');
     canvas.width = 512; canvas.height = 512;
@@ -607,6 +676,8 @@ function generateIcon() {
 }
 window.addEventListener('load', generateIcon);
 
+
+// --- CORE LOGIC ---
 function saveData() { localStorage.setItem('classPickerDataV22', JSON.stringify(appState)); }
 function getCurrentClass() { return appState.classes.find(c => c.id === appState.currentClassId); }
 function getCandidates(cls) { return cls.students.filter(s => !cls.absent.includes(s.name) && !cls.history.includes(s.name)); }
@@ -614,10 +685,8 @@ function getCandidates(cls) { return cls.students.filter(s => !cls.absent.includ
 function applyTheme(themeKey) {
     const t = themes[themeKey] || themes.blue;
     const r = document.documentElement.style;
-    r.setProperty('--bg-color', t.bg);
-    r.setProperty('--text-main', t.main);
-    r.setProperty('--text-sub', t.sub);
-    r.setProperty('--btn-primary', t.btn);
+    r.setProperty('--bg-color', t.bg); r.setProperty('--text-main', t.main);
+    r.setProperty('--text-sub', t.sub); r.setProperty('--btn-primary', t.btn);
 }
 
 function render() {
@@ -770,9 +839,8 @@ function playDrum(pool, winner) {
             res = res.concat(chunk);
         } return res;
     }
-    // Reduced repeat and threshold for quicker result
     let strip = createNonRepeatingStrip(pool, 4); 
-    const winIndex = Math.floor(strip.length * 0.5); // Bring target closer (50% instead of 80%)
+    const winIndex = Math.floor(strip.length * 0.5); 
     
     strip[winIndex] = winner; 
     if (winIndex > 0 && strip[winIndex-1].name === winner.name) strip[winIndex-1] = pool.find(s=>s.name!==winner.name) || winner;
@@ -930,13 +998,9 @@ els.quickLangBtn.onclick = () => {
     appState.settings.lang = appState.settings.lang === 'ja' ? 'en' : 'ja'; 
     saveData(); 
     render(); 
-    // If settings modal is open, re-render it to update texts
-    if(els.settingsModal.classList.contains('active')) {
-        renderSettings();
-    }
+    if(els.settingsModal.classList.contains('active')) renderSettings();
 };
 document.getElementById('cntMinus').onclick = () => { if(pickCount > 1) { pickCount--; els.cntValue.textContent = pickCount; }};
-// Increased Limit to 30
 document.getElementById('cntPlus').onclick = () => { if(pickCount < 30) { pickCount++; els.cntValue.textContent = pickCount; }};
 els.tabs.forEach(tab => { 
     tab.onclick = () => { 
@@ -952,7 +1016,6 @@ function renderSettings() {
     els.classTabs.innerHTML = '';
     const t = texts[appState.settings.lang];
     
-    // Update labels inside modal
     document.getElementById('settingsTitle').textContent = t.settings;
     document.getElementById('classNameLabel').textContent = t.class;
     document.getElementById('themeLabel').textContent = t.theme;
@@ -1033,7 +1096,6 @@ function confirmDeleteClass(id) {
     }
     const t = texts[appState.settings.lang];
     els.confirmMessage.textContent = t.delClassMsg;
-    // Set explicit onclick for confirm modal action
     els.doConfirmBtn.onclick = () => {
         appState.classes = appState.classes.filter(c => c.id !== id);
         if (appState.currentClassId === id) appState.currentClassId = appState.classes[0].id;
@@ -1045,7 +1107,6 @@ function confirmDeleteClass(id) {
     els.confirmModal.classList.add('active');
 }
 
-// Clear List
 els.clearListBtn.onclick = () => {
     const t = texts[appState.settings.lang];
     els.confirmMessage.textContent = t.clearListMsg;
@@ -1058,7 +1119,6 @@ els.clearListBtn.onclick = () => {
     els.confirmModal.classList.add('active');
 };
 
-// Export/Import
 els.exportBtn.onclick = () => {
     const dataStr = JSON.stringify(appState);
     const blob = new Blob([dataStr], {type: "application/json"});
