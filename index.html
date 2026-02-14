@@ -232,27 +232,19 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); color: #333;
             overflow: hidden; 
         }
-        
-        /* 修正: ヘッダー部分でタブが隠れないようパディングと構造を調整 */
-        .modal-fixed-header { 
-            padding: 1.5rem 2rem 0; /* 下部のパディングをなくしてコンテナに委ねる */
-            background: #fff; 
-            border-bottom: 1px solid #f1f5f9; 
-            flex-shrink: 0; 
-        }
-        .class-tabs-container {
-            width: 100%; overflow-x: auto; padding: 10px 5px; /* 上下パディングを確保して影や枠が切れないように */
-            white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none;
-        }
-        .class-tabs-container::-webkit-scrollbar { display: none; }
-        .class-tabs { display: flex; gap: 8px; align-items: center; }
-
+        .modal-fixed-header { padding: 1.5rem 2rem 0.5rem; background: #fff; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; }
         .modal-scroll-body { padding: 1.5rem 2rem; overflow-y: auto; flex: 1; }
         .modal-fixed-footer {
             padding: 1rem 2rem 1.5rem; background: #fff; border-top: 1px solid #f1f5f9;
             display: flex; gap: 1rem; justify-content: flex-end; flex-shrink: 0;
         }
 
+        .class-tabs-container {
+            width: 100%; overflow-x: auto; padding: 5px 2px; white-space: nowrap;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .class-tabs-container::-webkit-scrollbar { display: none; }
+        .class-tabs { display: flex; gap: 8px; }
         .class-tab {
             padding: 8px 24px 8px 16px; background: #f1f5f9; border-radius: 8px; font-size: 0.9rem;
             cursor: pointer; color: #64748b; font-weight: bold; transition: all 0.2s; border: 1px solid #cbd5e1;
@@ -406,6 +398,7 @@
         <div class="modal-content">
             <div class="modal-fixed-header">
                 <h2 style="margin-top:0; color:var(--text-main);" id="settingsTitle">設定 (Settings)</h2>
+                <!-- Class Tabs -->
                 <div class="class-tabs-container">
                     <div id="classTabs" class="class-tabs"></div>
                 </div>
@@ -435,14 +428,14 @@
                     <div class="data-manage-area">
                         <div class="manage-item">
                             <button id="exportBtn" class="manage-btn">
-                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L6.2,18.1L11.1,23L16,18.1V11H16Z" /></svg>
+                                <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" transform="scale(1,-1) translate(0,-24)"/></svg>
                                 <span id="exportText">ファイルに保存</span>
                             </button>
                             <div class="manage-desc" id="exportDesc">設定を保存します</div>
                         </div>
                         <div class="manage-item">
                             <button id="importBtn" class="manage-btn">
-                                <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" transform="scale(1,-1) translate(0,-24)"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M8,15.06L9.41,13.65L11,15.24V11H13V15.24L14.59,13.65L16,15.06L12,19.06L8,15.06Z" /></svg>
                                 <span id="importText">ファイルを読み込み</span>
                             </button>
                             <div class="manage-desc" id="importDesc">設定を復元します</div>
@@ -461,7 +454,7 @@
 
 <script>
 /**
- * Class Picker Pro - v25.0 (External Audio files & Bug Fixes)
+ * Class Picker Pro - v26.0 (Prevent Input Reset on Theme Change)
  */
 
 const themes = {
@@ -517,7 +510,7 @@ const defaultData = {
     settings: { sound: true, animation: 'drum', lang: 'ja' }
 };
 
-let appState = JSON.parse(localStorage.getItem('classPickerDataV25')) || defaultData;
+let appState = JSON.parse(localStorage.getItem('classPickerDataV26')) || defaultData;
 appState.classes.forEach(c => { 
     if(!c.theme) c.theme = 'blue';
     if(typeof c.students[0] === 'string') c.students = c.students.map(s => ({ name: s, gender: 'N' }));
@@ -651,7 +644,7 @@ window.addEventListener('load', generateIcon);
 
 
 // --- CORE LOGIC ---
-function saveData() { localStorage.setItem('classPickerDataV25', JSON.stringify(appState)); }
+function saveData() { localStorage.setItem('classPickerDataV26', JSON.stringify(appState)); }
 function getCurrentClass() { return appState.classes.find(c => c.id === appState.currentClassId); }
 function getCandidates(cls) { return cls.students.filter(s => !cls.absent.includes(s.name) && !cls.history.includes(s.name)); }
 
@@ -1082,7 +1075,7 @@ function renderSettings() {
         delBtn.onclick = (e) => { e.stopPropagation(); confirmDeleteClass(c.id); };
         tab.appendChild(delBtn);
         
-        tab.onclick = () => { editingClassId = c.id; loadClassToForm(c.id); renderSettings(); };
+        tab.onclick = () => { editingClassId = c.id; loadClassToForm(c.id, true); renderSettings(); };
         els.classTabs.appendChild(tab);
     });
     
@@ -1093,14 +1086,19 @@ function renderSettings() {
     els.classTabs.appendChild(addTab);
 }
 
-function loadClassToForm(id) {
+function loadClassToForm(id, updateInputs = true) {
     const c = appState.classes.find(cl => cl.id === id);
     if (!c) return;
-    els.classNameInput.value = c.name;
-    els.nameListInput.value = c.students.map(s => {
-        let suffix = ''; if(s.gender === 'M') suffix = ' 男'; else if(s.gender === 'F') suffix = ' 女';
-        return s.name + suffix;
-    }).join('\n');
+    
+    // Only update inputs if updateInputs is true
+    // This allows changing theme without losing unsaved text changes
+    if (updateInputs) {
+        els.classNameInput.value = c.name;
+        els.nameListInput.value = c.students.map(s => {
+            let suffix = ''; if(s.gender === 'M') suffix = ' 男'; else if(s.gender === 'F') suffix = ' 女';
+            return s.name + suffix;
+        }).join('\n');
+    }
     
     els.themeSelector.innerHTML = '';
     const currentClassTheme = c.theme || 'blue';
@@ -1109,7 +1107,11 @@ function loadClassToForm(id) {
         div.className = `theme-opt ${currentClassTheme === key ? 'selected' : ''}`;
         div.style.backgroundColor = t.bg; div.style.borderColor = t.main;
         div.onclick = () => { 
-            c.theme = key; saveData(); renderSettings(); loadClassToForm(id); if(id === appState.currentClassId) render(); 
+            c.theme = key; 
+            saveData(); 
+            renderSettings(); // Update Tabs
+            loadClassToForm(id, false); // Re-render theme selector only, DO NOT reset inputs
+            if(id === appState.currentClassId) render(); 
         };
         els.themeSelector.appendChild(div);
     });
@@ -1120,7 +1122,7 @@ function createNewClass() {
     const newClass = { id: newId, name: appState.settings.lang === 'ja' ? '新規クラス' : 'New Class', students: [], history: [], absent: [], theme: 'blue' };
     appState.classes.push(newClass);
     editingClassId = newId; appState.currentClassId = newId;
-    saveData(); render(); renderSettings(); loadClassToForm(newId);
+    saveData(); render(); renderSettings(); loadClassToForm(newId, true);
 }
 
 function confirmDeleteClass(id) {
@@ -1129,13 +1131,12 @@ function confirmDeleteClass(id) {
     }
     const t = texts[appState.settings.lang];
     els.confirmMessage.textContent = t.delClassMsg;
-    els.doConfirmBtn.textContent = t.yes;
-    els.cancelConfirmBtn.textContent = t.no;
+    // Set explicit onclick for confirm modal action
     els.doConfirmBtn.onclick = () => {
         appState.classes = appState.classes.filter(c => c.id !== id);
         if (appState.currentClassId === id) appState.currentClassId = appState.classes[0].id;
         if (editingClassId === id) editingClassId = appState.currentClassId;
-        saveData(); render(); renderSettings(); loadClassToForm(editingClassId);
+        saveData(); render(); renderSettings(); loadClassToForm(editingClassId, true);
         els.confirmModal.classList.remove('active');
     };
     els.cancelConfirmBtn.onclick = () => { els.confirmModal.classList.remove('active'); };
@@ -1146,8 +1147,6 @@ function confirmDeleteClass(id) {
 els.clearListBtn.onclick = () => {
     const t = texts[appState.settings.lang];
     els.confirmMessage.textContent = t.clearListMsg;
-    els.doConfirmBtn.textContent = t.yes;
-    els.cancelConfirmBtn.textContent = t.no;
     els.doConfirmBtn.onclick = () => {
         const cls = appState.classes.find(c => c.id === editingClassId);
         if(cls) { cls.students = []; els.nameListInput.value = ""; saveData(); render(); }
@@ -1179,7 +1178,7 @@ els.importInput.onchange = (e) => {
                 if(!appState.currentClassId || !appState.classes.find(c=>c.id===appState.currentClassId)) {
                     appState.currentClassId = appState.classes[0].id;
                 }
-                saveData(); render(); renderSettings(); loadClassToForm(editingClassId);
+                saveData(); render(); renderSettings(); loadClassToForm(editingClassId, true);
                 alert(appState.settings.lang === 'ja' ? "インポート完了" : "Import Complete");
             } else { alert("Invalid File"); }
         } catch(err) { alert("Error loading file"); }
@@ -1212,7 +1211,7 @@ els.saveSettingsBtn.onclick = () => {
 };
 
 els.settingsBtn.onclick = () => {
-    editingClassId = appState.currentClassId; renderSettings(); loadClassToForm(editingClassId);
+    editingClassId = appState.currentClassId; renderSettings(); loadClassToForm(editingClassId, true);
     els.settingsModal.classList.add('active');
 };
 els.soundBtn.onclick = () => { appState.settings.sound = !appState.settings.sound; saveData(); render(); };
