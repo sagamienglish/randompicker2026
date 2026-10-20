@@ -342,7 +342,7 @@
         .mobile-present { display: none; }
         #winnersDialog { width: min(1100px,94vw); max-height: 90dvh; border: 1px solid rgba(30,50,55,.1); border-radius: 24px; padding: clamp(20px,4vw,48px); color: var(--text-main); background: var(--bg-color); box-shadow: 0 24px 90px #0003; }
         #winnersDialog::backdrop { background: rgba(20,35,40,.55); backdrop-filter: blur(8px); }
-        .presentation-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .presentation-head { display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-bottom: 24px; }
         .presentation-head h2 { font-size: 1rem; letter-spacing: .12em; margin: 0; }
         #presentationNames { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: 16px; }
         .presented-name { background: white; padding: 28px 20px; border-radius: 16px; font-size: clamp(1.8rem,4vw,3.5rem); font-weight: 800; text-align: center; overflow-wrap: anywhere; }
@@ -528,8 +528,8 @@
         </div>
     </div>
 
-<dialog id="winnersDialog" aria-labelledby="presentationTitle">
-    <div class="presentation-head"><h2 id="presentationTitle">WINNERS</h2><button id="closePresentationBtn" class="present-btn" autofocus>閉じる ×</button></div>
+<dialog id="winnersDialog" aria-label="指名結果">
+    <div class="presentation-head"><button id="closePresentationBtn" class="present-btn" autofocus>閉じる ×</button></div>
     <div id="presentationNames" aria-live="polite"></div>
 </dialog>
 <script>
@@ -1230,7 +1230,7 @@ function showWinnerPresentation(names) {
     const dialog=document.getElementById('winnersDialog');
     const list=document.getElementById('presentationNames');
     const en=appState.settings.lang!=='ja';
-    document.getElementById('presentationTitle').textContent=en?'WINNERS':'指名されたみなさん';
+    dialog.setAttribute('aria-label',en?'Selected students':'指名結果');
     document.getElementById('closePresentationBtn').textContent=en?'Close ×':'閉じる ×';
     list.replaceChildren();list.classList.toggle('single',names.length===1);
     if(!names.length){const empty=document.createElement('p');empty.textContent=en?'No selections yet.':'まだ指名されていません。';list.appendChild(empty);}
