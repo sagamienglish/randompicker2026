@@ -15,10 +15,10 @@
     <style>
         :root {
             /* Default Theme */
-            --bg-color: #BCE2E8;
-            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --bg-color: #EFF7F8;
+            --sidebar-bg: rgba(255, 255, 255, 0.95); --pattern-color: rgba(47, 93, 98, 0.07);
             --text-main: #2F5D62;
-            --text-sub: #5C8D89;
+            --text-sub: #496F73;
             --accent: #F4F4F9;
             --btn-primary: #2F5D62;
             --btn-text: #FFFFFF;
@@ -36,8 +36,8 @@
             margin: 0; padding: 0;
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(white 2px, transparent 2px),
-                radial-gradient(white 2px, transparent 2px);
+                radial-gradient(var(--pattern-color) 1px, transparent 1px),
+                radial-gradient(var(--pattern-color) 1px, transparent 1px);
             background-size: 50px 50px;
             background-position: 0 0, 25px 25px;
             color: var(--text-main);
@@ -61,7 +61,7 @@
             width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             transition: all 0.2s; background: white; border: 1px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06); padding: 0;
         }
         .icon-btn svg { width: 20px; height: 20px; fill: var(--text-main); transition: fill 0.2s; }
         .icon-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
@@ -83,7 +83,7 @@
         }
         .tab-btn svg { width: 24px; height: 24px; fill: var(--text-main); }
         .tab-btn:hover { opacity: 1; background: rgba(255,255,255,0.5); }
-        .tab-btn.active { background: var(--btn-primary); opacity: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .tab-btn.active { background: var(--btn-primary); opacity: 1; box-shadow: 0 2px 6px rgba(0,0,0,0.10); }
         .tab-btn.active svg { fill: white; }
         .tab-btn::after {
             content: attr(data-tooltip); position: absolute; bottom: -35px; left: 50%;
@@ -96,7 +96,7 @@
         select {
             padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid white;
             background: rgba(255,255,255,0.9); color: var(--text-main); font-weight: bold;
-            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); outline: none;
+            cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.06); outline: none;
             max-width: 150px; height: 40px;
         }
 
@@ -123,7 +123,7 @@
             font-size: 0.95rem; background: white; transition: all 0.2s;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .student-item:hover { transform: translateX(3px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .student-item:hover { transform: translateX(3px); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .student-item.male span { color: var(--gender-m); }
         .student-item.female span { color: var(--gender-f); }
         .student-item.absent { opacity: 0.5; background: #f1f5f9; }
@@ -188,19 +188,19 @@
         }
         .result-name {
             font-size: 4rem; font-weight: 800; color: var(--text-main);
-            text-shadow: 3px 3px 0px rgba(255,255,255,0.8); line-height: 1.2; white-space: pre-wrap;
+            text-shadow: 0 2px 0 rgba(255,255,255,0.65); line-height: 1.2; white-space: pre-wrap;
         }
 
         .control-panel {
             position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 1rem; align-items: center; z-index: 15;
             background: rgba(255,255,255,0.9); padding: 0.8rem 2rem; border-radius: 50px;
-            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(47, 93, 98, 0.2); border: 1px solid white;
+            backdrop-filter: blur(10px); box-shadow: 0 4px 16px rgba(0,0,0,0.07); border: 1px solid white;
         }
         .pick-btn {
             padding: 0.8rem 3rem; font-size: 1.5rem; border-radius: 50px;
             background: var(--btn-primary); color: var(--btn-text); border: none;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12); cursor: pointer;
             font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;
         }
         .pick-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -303,6 +303,78 @@
         @media (max-width: 900px) {
             .winners-bar { display: none; } .stage { margin-right: 0; }
         }
+
+        /* Refined surfaces and consistent geometry */
+        .stage canvas { width: min(900px, 145%); height: auto; max-height: calc(100% - 100px); object-fit: contain; }
+        .tab-btn.active svg { fill: none; }
+        .tab-btn svg { fill: none; stroke: currentColor; }
+        .tab-btn { color: var(--text-main); }
+        .tab-btn.active { color: white; }
+        body { background-image: none; }
+        header { height: 72px; padding: 0 24px; background: rgba(255,255,255,.94); box-shadow: none; border-bottom: 1px solid rgba(32,55,60,.08); }
+        .brand { letter-spacing: -.5px; font-size: 1.1rem; }
+        .icon-btn { border-radius: 12px; border: 1px solid rgba(32,55,60,.08); box-shadow: none; }
+        .icon-btn:hover { transform: none; box-shadow: none; background: var(--bg-color); }
+        .anim-tabs { border-radius: 14px; gap: 4px; padding: 4px; background: var(--bg-color); box-shadow: none; }
+        .tab-btn { border-radius: 10px; width: 46px; height: 38px; }
+        .tab-btn svg { width: 21px; height: 21px; }
+        .tab-btn.active { box-shadow: 0 2px 4px rgba(0,0,0,.08); }
+        .sidebar, .winners-bar { box-shadow: none; background: rgba(255,255,255,.8); }
+        .student-item, .winner-card { border-radius: 10px; box-shadow: none; border: 1px solid rgba(32,55,60,.06); padding-top: 12px; padding-bottom: 12px; }
+        .result-name { font-size: clamp(2rem,5vw,4rem); letter-spacing: -.03em; text-shadow: none; }
+        .control-panel { border-radius: 22px; padding: 12px 16px; bottom: 28px; gap: 20px; background: rgba(255,255,255,.96); border: 1px solid rgba(32,55,60,.08); box-shadow: 0 8px 32px rgba(32,55,60,.07); }
+        .pick-btn { border-radius: 13px; min-height: 54px; font-size: 1.1rem; padding: 14px 40px; white-space: nowrap; box-shadow: none; }
+        .count-selector { border: 0; border-radius: 12px; background: var(--bg-color); }
+        .count-btn { background: transparent; border-radius: 8px; }
+        .modal-content { border-radius: 20px; }
+        @media (max-width: 600px) {
+            header { height: auto; min-height: 64px; padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
+            .brand { font-size: .95rem; }
+            .control-panel { padding: 10px; gap: 8px; max-width: calc(100% - 20px); }
+            .pick-btn { padding: 14px 22px; }
+            .result-name { font-size: 2.5rem; }
+        }
+
+        .present-btn { font: inherit; font-size: .8rem; font-weight: 700; padding: 9px 12px; border: 1px solid var(--text-main); color: var(--text-main); background: white; border-radius: 10px; cursor: pointer; }
+        #showWinnersBtn { width: 100%; margin: 0 0 14px; }
+        .winner-card { cursor: pointer; }
+        .winner-card:focus-visible, .present-btn:focus-visible { outline: 3px solid var(--text-main); outline-offset: 3px; }
+        .mobile-present { display: none; }
+        #winnersDialog { width: min(1100px,94vw); max-height: 90dvh; border: 1px solid rgba(30,50,55,.1); border-radius: 24px; padding: clamp(20px,4vw,48px); color: var(--text-main); background: var(--bg-color); box-shadow: 0 24px 90px #0003; }
+        #winnersDialog::backdrop { background: rgba(20,35,40,.55); backdrop-filter: blur(8px); }
+        .presentation-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .presentation-head h2 { font-size: 1rem; letter-spacing: .12em; margin: 0; }
+        #presentationNames { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: 16px; }
+        .presented-name { background: white; padding: 28px 20px; border-radius: 16px; font-size: clamp(1.8rem,4vw,3.5rem); font-weight: 800; text-align: center; overflow-wrap: anywhere; }
+        .presented-name small { display: block; font-size: .8rem; opacity: .65; margin-bottom: 12px; }
+        #presentationNames.single { display: block; }
+        #presentationNames.single .presented-name { font-size: clamp(2.5rem,8vw,7rem); padding: 60px 20px; }
+        @media(max-width:900px) { .mobile-present { display:block; } .control-panel { gap:8px; } .pick-btn { padding-left:18px; padding-right:18px; } }
+
+        .presented-name.male { color: var(--gender-m); border-top: 5px solid var(--gender-m); }
+        .presented-name.female { color: var(--gender-f); border-top: 5px solid var(--gender-f); }
+        body.roulette-projecting::after { content: ''; position: fixed; inset: 0; background: var(--bg-color); z-index: 39; }
+        body.roulette-projecting .stage canvas { position: fixed; top: 50%; left: 50%; width: min(140vw, 140vh); height: auto; max-height: none; z-index: 40; }
+        body.roulette-projecting .stage { z-index: 40; }
+        body.roulette-projecting .control-panel, body.roulette-projecting .result-wrapper { visibility: hidden; }
+
+        body[data-animation="drum"] .stage canvas { width: min(900px,115%); }
+        .mobile-present { white-space: nowrap; flex-shrink: 0; padding: 9px 7px; }
+        @media(max-width:600px) { .control-panel { gap: 5px; padding: 8px; } .count-label { margin: 0 3px; } .count-btn { width: 26px; } .pick-btn { padding: 14px 13px; } }
+
+        .slot-lever { display:none; position:absolute; right:2%; top:43%; width:60px; height:160px; z-index:16; border:0; background:transparent; cursor:grab; touch-action:none; }
+        body[data-animation="drum"] .slot-lever { display:block; }
+        .lever-base { position:absolute; width:34px; height:54px; bottom:15px; left:12px; border-radius:12px; background:linear-gradient(90deg,#7b8f94,#e8eeee,#92a5aa); border:1px solid #899c9f; }
+        .lever-arm { position:absolute; width:12px; height:112px; bottom:42px; left:23px; border-radius:8px; background:linear-gradient(90deg,#8a9da0,#eff3f1,#92a4a8); transform-origin:50% 100%; transform:rotate(var(--lever-angle,0deg)); transition:transform .25s ease; }
+        .lever-knob { position:absolute; top:-12px; left:-13px; width:38px; height:38px; border-radius:50%; background:radial-gradient(circle at 30% 25%,#ffd4b7,#b85d49 55%,#733c36); box-shadow:0 3px 6px #0003; }
+        .slot-pulling .lever-arm { animation:pull-lever .6s ease-in-out; }
+        @keyframes pull-lever { 0%,100%{transform:rotate(0)} 45%,65%{transform:rotate(85deg)} }
+        .slot-lever:focus-visible { outline:3px solid var(--text-main); border-radius:12px; }
+        body[data-animation="drum"] .stage canvas { top:42%; max-height:calc(100% - 115px); }
+        @media(max-width:600px){ .slot-lever { right:0; transform:scale(.7); transform-origin:right center; } }
+
+        body[data-animation="cards"] .stage canvas { width:min(1100px,100%); top:43%; max-height:calc(100% - 100px); }
+        @media(max-width:600px){ .anim-tabs { gap:1px; } .tab-btn { width:36px; } }
     </style>
 </head>
 <body>
@@ -317,13 +389,16 @@
 
         <div class="anim-tabs">
             <div class="tab-btn active" data-anim="drum" data-tooltip="スロット">
-                <svg viewBox="0 0 24 24"><path d="M17,2H7A2,2 0 0,0 5,4V20A2,2 0 0,0 7,22H17A2,2 0 0,0 19,20V4A2,2 0 0,0 17,2M7,4H17V8H7V4M17,20H7V16H17V20M7,14H17V10H7V14Z" /></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M5 8h14M5 16h14M10 11l2 2 2-2"/></svg>
             </div>
             <div class="tab-btn" data-anim="roulette" data-tooltip="ルーレット">
-                <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4V12H20A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z" /></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M12 4v6m2 3 5 3M10 13l-5 3M10 2h4l-2 4z"/></svg>
             </div>
             <div class="tab-btn" data-anim="garagara" data-tooltip="ガラガラ">
-                <svg viewBox="0 0 24 24"><path d="M12,2L4,7V17L12,22L20,17V7L12,2M12,4.5L18,8.2V15.8L12,19.5L6,15.8V8.2L12,4.5Z" /></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 7 4v9l-7 4-7-4V7zM3 20h18M3 11v9m18-9v9M12 11l3 2"/><circle cx="12" cy="11" r="2"/></svg>
+            </div>
+            <div class="tab-btn" data-anim="cards" data-tooltip="カード" role="button" tabindex="0" aria-label="カードシャッフル">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="m5 5-3 1 4 15 3-1"/><rect x="8" y="3" width="12" height="17" rx="2"/><path d="m14 8 3 3-3 3-3-3z"/></svg>
             </div>
         </div>
 
@@ -353,6 +428,7 @@
         <div class="stage">
             <canvas id="animCanvas" width="900" height="700"></canvas>
             
+            <button id="slotLever" class="slot-lever" aria-label="レバーを引いて抽選" title="引いてスタート"><span class="lever-base"></span><span class="lever-arm"><span class="lever-knob"></span></span></button>
             <div class="result-wrapper">
                 <div class="result-name" id="resultName">READY?</div>
             </div>
@@ -366,7 +442,7 @@
                     <div class="count-val" id="cntValue">1</div>
                     <button class="count-btn" id="cntPlus">+</button>
                 </div>
-                <button class="pick-btn" id="pickBtn">START</button>
+                <button class="pick-btn" id="pickBtn">START</button><button class="present-btn mobile-present" id="showWinnersMobileBtn" aria-label="指名履歴を大きく表示">履歴</button>
             </div>
         </div>
 
@@ -375,7 +451,7 @@
                 <span id="winnersTitle">WINNERS</span>
                 <button class="clear-btn" id="clearHistoryBtn">クリア</button>
             </div>
-            <div id="winnersContainer"></div>
+            <button class="present-btn" id="showWinnersBtn">大きく表示</button><div id="winnersContainer"></div>
         </div>
     </div>
 
@@ -452,17 +528,21 @@
         </div>
     </div>
 
+<dialog id="winnersDialog" aria-labelledby="presentationTitle">
+    <div class="presentation-head"><h2 id="presentationTitle">WINNERS</h2><button id="closePresentationBtn" class="present-btn" autofocus>閉じる ×</button></div>
+    <div id="presentationNames" aria-live="polite"></div>
+</dialog>
 <script>
 /**
  * Class Picker Pro - v26.0 (Prevent Input Reset on Theme Change)
  */
 
 const themes = {
-    blue:   { main: '#2F5D62', sub: '#5C8D89', bg: '#BCE2E8', btn: '#2F5D62' },
-    pink:   { main: '#9D4C6C', sub: '#D689A8', bg: '#F8D8E8', btn: '#9D4C6C' },
-    green:  { main: '#3D7355', sub: '#7AB596', bg: '#D1E8D9', btn: '#3D7355' },
-    yellow: { main: '#8B7D2B', sub: '#BFB25F', bg: '#FFF8C7', btn: '#8B7D2B' },
-    purple: { main: '#5D4C75', sub: '#9284A8', bg: '#E4D8F3', btn: '#5D4C75' }
+    blue:   { main: '#2F5D62', sub: '#496F73', bg: '#EFF7F8', btn: '#2F5D62' },
+    pink:   { main: '#9D4C6C', sub: '#87536A', bg: '#FCF1F6', btn: '#9D4C6C' },
+    green:  { main: '#3D7355', sub: '#4E705C', bg: '#F0F7F2', btn: '#3D7355' },
+    yellow: { main: '#75621F', sub: '#756526', bg: '#FCF8E8', btn: '#75621F' },
+    purple: { main: '#5D4C75', sub: '#716080', bg: '#F5F1FA', btn: '#5D4C75' }
 };
 
 const texts = {
@@ -476,7 +556,7 @@ const texts = {
         data: "データ移行", export: "ファイルに保存", import: "ファイルを読み込み",
         exportDesc: "設定を保存します", importDesc: "設定を復元します",
         studentList: "生徒リスト", winners: "WINNERS", clear: "クリア", ready: "READY?", start: "スタート",
-        tooltips: { drum: "スロット", roulette: "ルーレット", garagara: "ガラガラ" }
+        tooltips: { drum: "スロット", roulette: "ルーレット", garagara: "ガラガラ", cards: "カード" }
     },
     en: { 
         settings: "Settings", class: "Class Name", theme: "Theme Color", list: "Student List", 
@@ -488,7 +568,7 @@ const texts = {
         data: "Data Management", export: "Export Data", import: "Import Data",
         exportDesc: "Save all settings", importDesc: "Restore from file",
         studentList: "Student List", winners: "WINNERS", clear: "Clear", ready: "READY?", start: "START",
-        tooltips: { drum: "Slot", roulette: "Roulette", garagara: "Garagara" }
+        tooltips: { drum: "Slot", roulette: "Roulette", garagara: "Garagara", cards: "Cards" }
     }
 };
 
@@ -562,7 +642,10 @@ const els = {
 const audioCache = {
     rolling: new Audio('Rolling.mp3'),
     slow: new Audio('Slow.mp3'),
-    stop: new Audio('Stop.mp3')
+    stop: new Audio('Stop.mp3'),
+    cardFlip: new Audio('CardFlip.wav'),
+    cardShuffle: new Audio('CardShuffle.wav'),
+    cardReveal: new Audio('CardReveal.wav')
 };
 let audioInitialized = false;
 
@@ -616,6 +699,7 @@ function stopSound(type) {
 function stopAllSounds() {
     stopSound('rolling');
     stopSound('slow');
+    stopSound('cardFlip');stopSound('cardShuffle');stopSound('cardReveal');
     // We don't stop 'stop' sound so it rings out fully
 }
 
@@ -634,7 +718,7 @@ function generateIcon() {
     }
     ctx.beginPath(); ctx.arc(cx, cy, 40, 0, Math.PI * 2); ctx.fillStyle = 'white'; ctx.fill();
     ctx.beginPath(); ctx.moveTo(256, 20); ctx.lineTo(230, 60); ctx.lineTo(282, 60); ctx.closePath();
-    ctx.fillStyle = 'white'; ctx.strokeStyle = '#333'; ctx.lineWidth = 10; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'white'; ctx.strokeStyle = '#333'; ctx.lineWidth = 10; ctx.fill(); ctx.strokeStyle="rgba(255,255,255,.8)"; ctx.lineWidth=2; ctx.stroke();
     
     const url = canvas.toDataURL('image/png');
     document.getElementById('appleIcon').href = url;
@@ -651,11 +735,16 @@ function getCandidates(cls) { return cls.students.filter(s => !cls.absent.includ
 function applyTheme(themeKey) {
     const t = themes[themeKey] || themes.blue;
     const r = document.documentElement.style;
+    const rgb = t.main.slice(1).match(/../g).map(value => parseInt(value, 16));
+    r.setProperty('--pattern-color', 'rgba(' + rgb.join(',') + ',0.07)');
     r.setProperty('--bg-color', t.bg); r.setProperty('--text-main', t.main);
     r.setProperty('--text-sub', t.sub); r.setProperty('--btn-primary', t.btn);
 }
 
 function render() {
+    document.body.dataset.animation = appState.settings.animation;
+    const canvasHeight=appState.settings.animation==='cards'&&window.innerWidth<600?1200:700;
+    if(els.canvas.height!==canvasHeight)els.canvas.height=canvasHeight;
     const cls = getCurrentClass();
     const lang = appState.settings.lang;
     const t = texts[lang];
@@ -666,9 +755,9 @@ function render() {
     document.querySelector('.winners-title span').textContent = t.winners;
     els.clearHistoryBtn.textContent = t.clear;
     els.pickBtn.textContent = t.start;
-    if(!isAnimating) els.resultName.textContent = t.ready;
+    if(!isAnimating) els.resultName.textContent = appState.settings.animation === 'drum' ? t.ready : '';
 
-    const animKeys = ['drum', 'roulette', 'garagara'];
+    const animKeys = ['drum', 'roulette', 'garagara', 'cards'];
     els.tabs.forEach((tab, i) => {
         tab.setAttribute('data-tooltip', t.tooltips[animKeys[i]]);
         if(tab.dataset.anim === appState.settings.animation) tab.classList.add('active');
@@ -709,6 +798,10 @@ function render() {
         if (studentObj.gender === 'M') div.classList.add('male');
         if (studentObj.gender === 'F') div.classList.add('female');
         div.innerHTML = `<div class="order">#${idx + 1}</div><div class="name">${name}</div>`;
+        div.setAttribute('role', 'button'); div.tabIndex = 0;
+        div.setAttribute('aria-label', name + 'を大きく表示');
+        div.onclick = () => showWinnerPresentation([name]);
+        div.onkeydown = event => { if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showWinnerPresentation([name]); } };
         els.winnersList.appendChild(div);
     });
 
@@ -722,6 +815,25 @@ function render() {
     if (!isAnimating) drawIdle();
 }
 
+function drawSlotBackdrop(ctx,w,h) {
+    const cx=w/2,cy=h/2;
+    ctx.save();
+    const frame=ctx.createLinearGradient(0,cy-305,0,cy+305);
+    frame.addColorStop(0,'#eff3f2');frame.addColorStop(.48,'#b9c8c8');frame.addColorStop(1,'#eef3f2');
+    ctx.shadowColor='rgba(25,45,50,.16)';ctx.shadowBlur=24;ctx.shadowOffsetY=12;
+    ctx.beginPath();ctx.roundRect(cx-370,cy-305,740,610,32);ctx.fillStyle=frame;ctx.fill();
+    ctx.shadowColor='transparent';
+    ctx.beginPath();ctx.roundRect(cx-350,cy-285,700,570,20);ctx.fillStyle='#fbfcfa';ctx.fill();
+    const shade=ctx.createLinearGradient(0,cy-285,0,cy+285);
+    shade.addColorStop(0,'rgba(35,60,65,.14)');shade.addColorStop(.24,'rgba(255,255,255,0)');shade.addColorStop(.76,'rgba(255,255,255,0)');shade.addColorStop(1,'rgba(35,60,65,.14)');
+    ctx.fillStyle=shade;ctx.fill();
+    ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--btn-primary');
+    for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(cx+side*342,cy-14);ctx.lineTo(cx+side*322,cy);ctx.lineTo(cx+side*342,cy+14);ctx.fill();}
+    ctx.strokeStyle='rgba(45,75,80,.13)';ctx.lineWidth=1;
+    for(const y of [-165,-55,55,165]){ctx.beginPath();ctx.moveTo(cx-310,cy+y);ctx.lineTo(cx+310,cy+y);ctx.stroke();}
+    ctx.restore();
+}
+
 function drawIdle() {
     const ctx = els.canvas.getContext('2d');
     const w = els.canvas.width; const h = els.canvas.height;
@@ -731,31 +843,61 @@ function drawIdle() {
 
     if (anim === 'drum') {
         ctx.font = "bold 60px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillText("SLOT", cx, cy);
+        drawSlotBackdrop(ctx,w,h); ctx.fillStyle = "rgba(0,0,0,0.04)";
     } else if (anim === 'roulette') {
         const radius = 220;
         for(let i=0; i<6; i++) {
             ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,radius, i*Math.PI/3, (i+1)*Math.PI/3);
-            ctx.fillStyle = ['#FCA5A5', '#6EE7B7', '#FDE047', '#93C5FD', '#C4B5FD', '#FDBA74'][i];
+            ctx.fillStyle = ['#D9E8E4', '#E9DEC9', '#D6E1EB', '#E8D8D9', '#DFDCED', '#E8EBCF'][i];
             ctx.fill(); ctx.stroke();
         }
-        ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.moveTo(cx, cy-radius+30); ctx.moveTo(cx-20, cy-radius-10); ctx.moveTo(cx+20, cy-radius-10); ctx.arc(cx, cy-radius-10, 20, Math.PI, 0); ctx.fill();
+        drawWheelFinish(ctx,cx,cy,radius);
+        ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--btn-primary');ctx.beginPath();ctx.moveTo(cx-13,cy-radius-22);ctx.lineTo(cx+13,cy-radius-22);ctx.lineTo(cx,cy-radius+5);ctx.closePath();ctx.fill();
+    } else if (anim === 'cards') {
+        drawCardTable(ctx,w,h);
+        const candidates=getCandidates(getCurrentClass()).slice(0,8);
+        candidates.forEach((student,i)=>{const pos=cardTablePosition(i,w,h);ctx.save();ctx.translate(pos.x,pos.y);ctx.scale(pos.scale,pos.scale);drawShuffleCard(ctx,0,0,0,1,student);ctx.restore();});
     } else if (anim === 'garagara') {
         drawGaragaraMachine(ctx, cx, cy, 0);
     }
 }
 
 function drawGaragaraMachine(ctx, cx, cy, rotation) {
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(cx - 140, cy, 20, 180); ctx.fillRect(cx + 120, cy, 20, 180); ctx.fillRect(cx - 160, cy + 180, 320, 20);
-    ctx.fillStyle = '#e2e8f0'; ctx.fillRect(cx + 80, cy + 160, 120, 40);
-    ctx.fillStyle = '#94a3b8'; ctx.fillRect(cx + 80, cy + 160, 10, 40); ctx.fillRect(cx + 190, cy + 160, 10, 40);
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotation);
-    ctx.beginPath();
-    for (let i = 0; i <= 8; i++) { const theta = i * 2 * Math.PI / 8; ctx.lineTo(120 * Math.cos(theta), 120 * Math.sin(theta)); }
-    ctx.fillStyle = '#d97706'; ctx.fill(); ctx.strokeStyle = '#fcd34d'; ctx.lineWidth = 5; ctx.stroke();
-    ctx.beginPath(); ctx.arc(0,0, 40, 0, Math.PI*2); ctx.fillStyle = '#b45309'; ctx.fill();
-    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(110, -15, 30, 30);
+    const theme = getComputedStyle(document.documentElement).getPropertyValue('--btn-primary').trim();
+    const box = (x,y,w,h,r,fill) => { ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.fillStyle=fill; ctx.fill(); };
+    ctx.save();
+    ctx.fillStyle='rgba(28,42,47,.09)'; ctx.beginPath(); ctx.ellipse(cx+12,cy+207,185,14,0,0,Math.PI*2); ctx.fill();
+    const metal=ctx.createLinearGradient(cx-150,0,cx+150,0);
+    metal.addColorStop(0,'#a3b0b3'); metal.addColorStop(.45,'#edf0ef'); metal.addColorStop(1,'#87989c');
+    box(cx-142,cy-10,18,192,7,metal); box(cx+124,cy-10,18,192,7,metal);
+    box(cx-165,cy+180,330,20,9,theme);
+    box(cx+77,cy+158,125,38,10,'#d5dddb'); box(cx+86,cy+161,107,20,7,'#f7f9f6');
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotation);
+    const polygon=(r)=>{ctx.beginPath();for(let i=0;i<8;i++){const t=(i+.5)*Math.PI/4;const x=r*Math.cos(t),y=r*Math.sin(t);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.closePath();};
+    const wood=ctx.createLinearGradient(-110,-110,110,120);
+    wood.addColorStop(0,'#e6c396');wood.addColorStop(.5,'#bc8a55');wood.addColorStop(1,'#92613b');
+    ctx.shadowColor='rgba(33,38,30,.20)';ctx.shadowBlur=16;ctx.shadowOffsetY=7;
+    polygon(126);ctx.fillStyle=wood;ctx.fill();ctx.shadowColor='transparent';
+    ctx.save();polygon(116);ctx.clip();ctx.strokeStyle='rgba(91,53,24,.13)';ctx.lineWidth=2;
+    for(let y=-120;y<130;y+=22){ctx.beginPath();ctx.moveTo(-130,y);ctx.bezierCurveTo(-40,y-5,30,y+5,130,y);ctx.stroke();}ctx.restore();
+    polygon(115);ctx.strokeStyle='#efdab8';ctx.lineWidth=3;ctx.stroke();
+    for(let i=0;i<8;i++){const t=(i+.5)*Math.PI/4;ctx.beginPath();ctx.arc(104*Math.cos(t),104*Math.sin(t),3,0,Math.PI*2);ctx.fillStyle='#765333';ctx.fill();}
+    box(108,-13,34,26,5,'#6a7777');
+    ctx.restore();
+    ctx.beginPath();ctx.arc(cx,cy,25,0,Math.PI*2);ctx.fillStyle=theme;ctx.fill();
+    ctx.beginPath();ctx.arc(cx-5,cy-6,6,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.35)';ctx.fill();
+    ctx.strokeStyle=theme;ctx.lineWidth=10;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+47,cy+29);ctx.lineTo(cx+67,cy+18);ctx.stroke();
+    box(cx+60,cy+3,16,34,8,'#34474b');
+    ctx.restore();
+}
+
+function drawWheelFinish(ctx, cx, cy, radius) {
+    ctx.save(); ctx.translate(cx,cy);
+    ctx.beginPath();ctx.arc(0,0,radius+5,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=10;ctx.stroke();
+    ctx.beginPath();ctx.arc(0,0,radius+11,0,Math.PI*2);ctx.strokeStyle='rgba(42,60,64,.18)';ctx.lineWidth=2;ctx.stroke();
+    const hub=ctx.createRadialGradient(-7,-8,2,0,0,29);hub.addColorStop(0,'#fff');hub.addColorStop(1,'#dce3e1');
+    ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.fillStyle=hub;ctx.fill();
+    ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--btn-primary');ctx.fill();
     ctx.restore();
 }
 
@@ -775,7 +917,10 @@ els.pickBtn.onclick = () => {
         selectionQueue.push(tempPool[randIdx]); tempPool.splice(randIdx, 1);
     }
     isAnimating = true; isMultiPickSession = false; els.pickBtn.disabled = true; els.resultName.textContent = "";
-    processQueue(pool);
+    if(appState.settings.animation==='drum') {
+        document.body.classList.add('slot-pulling');
+        setTimeout(()=>{document.body.classList.remove('slot-pulling');processQueue(pool);},600);
+    } else processQueue(pool);
 };
 
 function processQueue(displayPool) {
@@ -790,6 +935,7 @@ function processQueue(displayPool) {
     if (anim === 'drum') playDrum(displayPool, nextWinner);
     else if (anim === 'roulette') playRoulette(displayPool, nextWinner);
     else if (anim === 'garagara') playGaragara(displayPool, nextWinner);
+    else if (anim === 'cards') playCards(displayPool, nextWinner);
 }
 
 function onOneFinished(winner) {
@@ -798,7 +944,7 @@ function onOneFinished(winner) {
     // Win sound is handled in the animation loops right before this call
     
     isMultiPickSession = true;
-    if (appState.settings.animation === 'drum') els.resultName.textContent = ""; else els.resultName.textContent = winner.name;
+    if (['drum','cards'].includes(appState.settings.animation)) els.resultName.textContent = ""; else els.resultName.textContent = winner.name;
     setTimeout(() => {
         if (selectionQueue.length > 0) { const updatedPool = getCandidates(cls); processQueue(updatedPool.length ? updatedPool : [winner]); }
         else { isAnimating = false; els.pickBtn.disabled = false; }
@@ -818,20 +964,21 @@ function playDrum(pool, winner) {
             res = res.concat(chunk);
         } return res;
     }
-    let strip = createNonRepeatingStrip(pool, 4); 
+    let strip = createNonRepeatingStrip(pool, Math.max(8, Math.ceil(20/pool.length))); 
     const winIndex = Math.floor(strip.length * 0.5); 
     
     strip[winIndex] = winner; 
     if (winIndex > 0 && strip[winIndex-1].name === winner.name) strip[winIndex-1] = pool.find(s=>s.name!==winner.name) || winner;
     if (winIndex < strip.length-1 && strip[winIndex+1].name === winner.name) strip[winIndex+1] = pool.find(s=>s.name!==winner.name) || winner;
 
-    const itemHeight = 140; let scrollY = 0; let speed = 60; let state = 'spinning'; let prevState = '';
+    const itemHeight = 110; let scrollY = 0; let speed = 60; let state = 'spinning'; let prevState = '';
     const patterns = [{ friction: 0.97 }, { friction: 0.95 }, { friction: 0.98 }, { friction: 0.96 }, { friction: 0.985 }];
     const pat = patterns[Math.floor(Math.random() * patterns.length)];
     let targetY = (winIndex * itemHeight) - (height/2) + (itemHeight/2);
 
     const loop = () => {
         ctx.clearRect(0,0,width,height);
+        drawSlotBackdrop(ctx,width,height);
         
         if (state === 'spinning') { 
             scrollY += speed; 
@@ -860,6 +1007,7 @@ function playDrum(pool, winner) {
         
         const isStopped = (state === 'stopping');
 
+        ctx.save();ctx.beginPath();ctx.roundRect(width/2-315,height/2-275,630,550,16);ctx.clip();
         const startIdx = Math.floor(scrollY / itemHeight);
         for (let i = startIdx - 2; i < startIdx + 8; i++) {
             if (i >= 0 && i < strip.length) {
@@ -872,13 +1020,14 @@ function playDrum(pool, winner) {
                         else { scale = 0.8; alpha = 0.4; ctx.fillStyle = '#64748b'; }
                     } else { ctx.fillStyle = (item.gender==='M') ? '#059669' : (item.gender==='F'?'#7C3AED':'#2F5D62'); }
                     ctx.save(); ctx.translate(width/2, drawY + itemHeight/2); ctx.scale(scale, scale); ctx.globalAlpha = alpha;
-                    ctx.font = "bold 50px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    ctx.font = "bold 44px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
                     if (!isStopped && speed > 10) ctx.filter = `blur(${speed/10}px)`;
                     ctx.fillText(item.name, 0, 0); ctx.restore();
                 }
             }
         }
         
+        ctx.restore();
         if (!isStopped) { requestAnimationFrame(loop); }
         else { onOneFinished(winner); }
     };
@@ -887,68 +1036,127 @@ function playDrum(pool, winner) {
 
 // 2. ROULETTE
 function playRoulette(pool, winner) {
-    const ctx = els.canvas.getContext('2d'); const cx = els.canvas.width/2; const cy = els.canvas.height/2; const radius = 220;
-    
-    let displaySlices = pool.length; if(displaySlices > 24) displaySlices = 24;
-    const sliceAngle = (2*Math.PI)/displaySlices;
-    const colors = ['#FCA5A5', '#6EE7B7', '#FDE047', '#93C5FD', '#C4B5FD', '#FDBA74'];
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--btn-primary').trim();
-
-    let targetRotation = (3*Math.PI/2) - (sliceAngle/2) + (Math.random()-0.5)*(sliceAngle*0.9); 
-    const totalRotation = (3*2*Math.PI) + targetRotation;
-    let currentRotation = 0; let progress = 0;
-    const startZoom = isMultiPickSession ? 1.5 : 1.0; const endZoom = 1.5;
-    const startTransY = isMultiPickSession ? 150 : 0; const endTransY = 150;
-
-    const speeds = [0.005, 0.007, 0.009, 0.006, 0.004];
-    const speed = speeds[Math.floor(Math.random() * speeds.length)];
-
-    let animState = 'spinning';
+    const ctx=els.canvas.getContext('2d'), cx=els.canvas.width/2, cy=els.canvas.height/2, radius=220;
+    const others=pool.filter(student=>student.name!==winner.name).sort(()=>Math.random()-.5);
+    const slices=[winner,...others.slice(0,23)], angle=Math.PI*2/slices.length;
+    const colors=['#D9E8E4','#E9DEC9','#D6E1EB','#E8D8D9','#DFDCED','#E8EBCF'];
+    const theme=getComputedStyle(document.documentElement).getPropertyValue('--btn-primary').trim();
+    document.body.classList.add('roulette-projecting');
+    const target=Math.PI*1.5-angle*.5+(Math.random()-.5)*angle*.45;
+    const total=Math.PI*2*6+target, duration=6200, start=performance.now();
+    let slowing=false;
     playSoundLoop('rolling');
-
-    const animLoop = () => {
-        progress += speed; if (progress > 1) progress = 1;
-        
-        if (progress > 0.7 && animState === 'spinning') {
-            animState = 'slowing';
-            stopSound('rolling');
-            playSoundLoop('slow');
+    function frame(now) {
+        const p=Math.min((now-start)/duration,1), ease=1-Math.pow(1-p,4), rotation=total*ease;
+        if(p>.52&&!slowing){slowing=true;stopSound('rolling');playSoundLoop('slow');}
+        ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,els.canvas.width,els.canvas.height);
+        ctx.save();ctx.translate(cx,210);ctx.scale(2,2);ctx.translate(-cx,-(cy-radius));
+        // The board stays in place; only the numbered sectors rotate.
+        ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);
+        for(let i=0;i<slices.length;i++){
+            ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,radius,i*angle,(i+1)*angle);ctx.closePath();
+            ctx.fillStyle=p===1&&i===0?'#F4CE78':colors[i%colors.length];ctx.fill();
+            ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+            ctx.save();ctx.rotate(i*angle+angle/2);ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillStyle='#29474C';ctx.font='700 20px sans-serif';
+            ctx.fillText(slices[i].name,radius-24,0,145);ctx.restore();
         }
+        ctx.restore();drawWheelFinish(ctx,cx,cy,radius);
+        // Brass pins and a stationary pointer emphasize the physical wheel.
+        for(let i=0;i<48;i++){const t=i*Math.PI/24+rotation;ctx.beginPath();ctx.arc(cx+232*Math.cos(t),cy+232*Math.sin(t),2.5,0,Math.PI*2);ctx.fillStyle='#B59A63';ctx.fill();}
+        const phase=((rotation+Math.PI/2)/angle)%1;
+        const flick=p<1&&p>.25?Math.sin(phase*Math.PI)*Math.min(0.16,(1-p)*.5):0;
+        ctx.save();ctx.translate(cx,cy-radius-24);ctx.rotate(flick);
+        ctx.shadowColor='#0003';ctx.shadowBlur=6;ctx.shadowOffsetY=3;
+        ctx.beginPath();ctx.moveTo(-15,-10);ctx.lineTo(15,-10);ctx.lineTo(0,28);ctx.closePath();ctx.fillStyle=theme;ctx.fill();
+        ctx.shadowColor='transparent';ctx.beginPath();ctx.arc(0,-5,4,0,Math.PI*2);ctx.fillStyle='#F4CE78';ctx.fill();ctx.restore();
+        ctx.restore();
+        if(p<1)requestAnimationFrame(frame);
+        else{stopSound('slow');playSoundOnce('stop');setTimeout(()=>{document.body.classList.remove('roulette-projecting');onOneFinished(winner);},900);}
+    }
+    requestAnimationFrame(frame);
+}
 
-        const ease = 1 - Math.pow(1 - progress, 3);
-        currentRotation = totalRotation * ease;
-        const zoom = startZoom + (endZoom - startZoom) * ease;
-        const transY = startTransY + (endTransY - startTransY) * ease;
-        
-        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
-        ctx.translate(cx, cy + transY); ctx.scale(zoom, zoom); ctx.rotate(currentRotation);
-        
-        for(let i=0; i<displaySlices; i++) {
-            ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0, radius, i*sliceAngle, (i+1)*sliceAngle);
-            ctx.fillStyle = colors[i % colors.length]; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
-            
-            ctx.save(); ctx.rotate(i*sliceAngle + sliceAngle/2); ctx.textAlign = "right"; ctx.fillStyle = "#2F5D62"; ctx.font = "bold 14px Arial";
-            let text = (i === 0) ? winner.name : (pool[i] ? pool[i].name : "...");
-            ctx.fillText(text, radius - 10, 5); ctx.restore();
-        }
-        ctx.beginPath(); ctx.arc(0,0, 30, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill();
+// Card shuffle: selection uses the same queue as the other modes.
+function drawShuffleCard(ctx,x,y,rotation,scaleX,student,selected=false) {
+    const theme=getComputedStyle(document.documentElement).getPropertyValue('--btn-primary').trim();
+    ctx.save();ctx.translate(x,y);ctx.rotate(rotation);ctx.scale(Math.max(.015,scaleX),1);
+    ctx.shadowColor='rgba(25,40,45,.18)';ctx.shadowBlur=22;ctx.shadowOffsetY=12;
+    ctx.beginPath();ctx.roundRect(-155,-210,310,420,22);ctx.fillStyle='#fff';ctx.fill();ctx.shadowColor='transparent';
+    ctx.beginPath();ctx.roundRect(-144,-199,288,398,16);ctx.fillStyle=student?'#fcfcf9':theme;ctx.fill();
+    if(!student){
+        ctx.save();ctx.beginPath();ctx.roundRect(-134,-189,268,378,12);ctx.clip();
+        ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=1;
+        for(let i=-550;i<550;i+=22){ctx.beginPath();ctx.moveTo(i,-210);ctx.lineTo(i+420,210);ctx.stroke();ctx.beginPath();ctx.moveTo(i,-210);ctx.lineTo(i-420,210);ctx.stroke();}ctx.restore();
+        ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1.5;ctx.strokeRect(-126,-181,252,362);
+        ctx.save();ctx.rotate(Math.PI/4);ctx.beginPath();ctx.roundRect(-40,-40,80,80,12);ctx.strokeStyle='#fff9';ctx.lineWidth=2;ctx.stroke();ctx.restore();
+        ctx.fillStyle='white';ctx.font='600 16px sans-serif';ctx.textAlign='center';ctx.fillText('CLASS PICKER',0,132);
+    }else{
+        const color=student.gender==='M'?'#059669':student.gender==='F'?'#7C3AED':theme;
+        ctx.fillStyle=color;ctx.font='700 15px sans-serif';ctx.textAlign='left';ctx.fillText(selected?'SELECTED':'NAME CARD',-119,-160);
+        ctx.font='800 42px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(student.name,0,0,250);
+        ctx.beginPath();ctx.arc(0,116,22,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+        ctx.strokeStyle='white';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-9,116);ctx.lineTo(-2,123);ctx.lineTo(10,109);ctx.stroke();
+    }
+    ctx.restore();
+}
+// Card effects use regular audio files, like the existing MP3 effects.
+function playCardEffect(type) {
+    const sounds={flip:'cardFlip',shuffle:'cardShuffle',reveal:'cardReveal'};
+    if(sounds[type])playSoundOnce(sounds[type]);
+}
 
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        const visualTop = cy + transY - (radius * zoom);
-        ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(cx, visualTop+10, 8, 4, 0, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = themeColor; ctx.beginPath(); ctx.arc(cx, visualTop - 25, 20, Math.PI, 0); ctx.lineTo(cx, visualTop + 10); ctx.lineTo(cx - 20, visualTop - 25); ctx.fill();
-        ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, visualTop - 25, 8, 0, Math.PI*2); ctx.fill();
-
-        if (progress < 1) { 
-            requestAnimationFrame(animLoop); 
-        } else { 
-            stopSound('slow');
-            playSoundOnce('stop');
-            els.resultName.textContent = winner.name; 
-            onOneFinished(winner); 
-        }
-    };
-    animLoop();
+function cardTablePosition(index,w,h) {
+    const narrow=h>900, columns=narrow?2:4, rows=narrow?4:2;
+    const cellW=(w-70)/columns,cellH=(h-150)/rows;
+    return {x:35+cellW*(index%columns+.5),y:100+cellH*(Math.floor(index/columns)+.5),scale:Math.min((cellW-20)/310,(cellH-22)/420)};
+}
+function drawCardTable(ctx,w,h,label='') {
+    ctx.save();
+    const felt=ctx.createLinearGradient(0,0,w,h);felt.addColorStop(0,'#314E4B');felt.addColorStop(1,'#203A38');
+    ctx.beginPath();ctx.roundRect(12,35,w-24,h-55,30);ctx.fillStyle='#AF8D64';ctx.fill();
+    ctx.beginPath();ctx.roundRect(22,45,w-44,h-75,24);ctx.fillStyle=felt;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.15)';ctx.setLineDash([3,6]);ctx.lineWidth=1;ctx.strokeRect(40,65,w-80,h-115);ctx.setLineDash([]);
+    ctx.font='600 21px sans-serif';ctx.textAlign='center';ctx.fillStyle='#F3EEE3';if(label)ctx.fillText(label,w/2,88);
+    ctx.restore();
+}
+function playCards(pool,winner) {
+    const ctx=els.canvas.getContext('2d'),w=els.canvas.width,h=els.canvas.height,start=performance.now();
+    // Keep the drawn cards unique and always include the already selected winner.
+    const displayed=[winner,...pool.filter(s=>s.name!==winner.name).sort(()=>Math.random()-.5).slice(0,7)].sort(()=>Math.random()-.5);
+    const winnerIndex=displayed.findIndex(s=>s.name===winner.name);
+    const destination=displayed.map((_,i)=>i).sort(()=>Math.random()-.5);
+    let soundPhase=0,lastShuffle=-1,turned=false,flipped=false;
+    function frame(now){
+        const elapsed=now-start, reveal=Math.max(0,Math.min((elapsed-7100)/900,1));
+        ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,w,h);
+        const ja=appState.settings.lang==='ja';
+        const label=elapsed<2500?'':elapsed<3500?(ja?'カードを伏せます':'Turning the cards'):elapsed<5900?(ja?'シャッフル中…':'Shuffling…'):elapsed<7100?(ja?'どのカードかな？':'Which card?'):(ja?'選ばれたのは…':'Selected…');
+        drawCardTable(ctx,w,h,label);
+        if(elapsed>=2500&&!turned){turned=true;playCardEffect('flip');}
+        if(elapsed>=3500&&elapsed<5900){const beat=Math.floor((elapsed-3500)/180);if(beat!==lastShuffle){lastShuffle=beat;playCardEffect('shuffle');}}
+        if(elapsed>=3500&&soundPhase===0){soundPhase=1;}
+        if(elapsed>=5900&&soundPhase===1){soundPhase=2;playCardEffect('flip');}
+        if(elapsed>=7550&&!flipped){flipped=true;playCardEffect('reveal');}
+        const drawOne=i=>{
+            const origin=cardTablePosition(i,w,h),target=cardTablePosition(destination[i],w,h);
+            const mix=Math.max(0,Math.min((elapsed-3500)/2400,1)),ease=mix*mix*(3-2*mix);
+            let x=origin.x+(target.x-origin.x)*ease,y=origin.y+(target.y-origin.y)*ease;
+            let angle=elapsed>=3500&&elapsed<5900?Math.sin(mix*Math.PI*4+i)*.12:0;
+            let scale=origin.scale,face=elapsed<3000,flip=1;
+            if(elapsed>=2500&&elapsed<3500){const t=(elapsed-2500)/1000;flip=Math.abs(Math.cos(t*Math.PI));face=t<.5;}
+            if(elapsed>=5900&&i===winnerIndex){
+                const lift=Math.min((elapsed-5900)/1000,1),e=lift*lift*(3-2*lift);
+                x+=(w/2-x)*e;y+=(h/2+20-y)*e;scale+=(Math.min(1.35,(w-100)/310,(h-160)/420)-scale)*e;
+                if(elapsed>=7100){flip=Math.abs(Math.cos(reveal*Math.PI));face=reveal>.5;}
+            }
+            ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);drawShuffleCard(ctx,0,0,angle,flip,face?displayed[i]:null,elapsed>=7100&&i===winnerIndex);ctx.restore();
+        };
+        displayed.forEach((_,i)=>{if(i!==winnerIndex||elapsed<5900)drawOne(i);});
+        if(elapsed>=5900){ctx.fillStyle='rgba(15,28,27,.4)';ctx.beginPath();ctx.roundRect(22,100,w-44,h-130,20);ctx.fill();drawOne(winnerIndex);}
+        if(elapsed<8300)requestAnimationFrame(frame);
+        else{els.canvas.setAttribute('aria-label',winner.name);onOneFinished(winner);}
+    }
+    requestAnimationFrame(frame);
 }
 
 // 3. GARAGARA
@@ -985,13 +1193,19 @@ function playGaragara(pool, winner) {
             if (ball.y > cy + 180 - 15) { ball.y = cy + 180 - 15; ball.vy *= -0.4; ball.vx *= 0.8; }
             if (ball.x > cx + 190 - 15) { ball.x = cx + 190 - 15; ball.vx *= -0.5; }
 
-            ctx.beginPath(); ctx.arc(ball.x, ball.y, 25, 0, Math.PI*2);
-            ctx.fillStyle = (winner.gender === 'M') ? '#059669' : (winner.gender === 'F' ? '#7C3AED' : '#EF4444');
-            ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
-            
-            ctx.fillStyle = 'white'; let fontSize = 12; if (winner.name.length > 5) fontSize = 8; else if (winner.name.length > 3) fontSize = 10;
-            ctx.font = `bold ${fontSize}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(winner.name, ball.x, ball.y);
+            const ballColor = winner.gender === 'M' ? '#059669' : winner.gender === 'F' ? '#7C3AED' : '#CB634A';
+            ctx.save();
+            // Contact shadow tightens as the ball approaches the tray.
+            const altitude=Math.max(0,cy+165-ball.y);
+            ctx.fillStyle='rgba(25,35,40,'+(0.2/(1+altitude/40))+')';ctx.beginPath();ctx.ellipse(ball.x,cy+183,22+altitude*.06,5+altitude*.02,0,0,Math.PI*2);ctx.fill();
+            const glaze=ctx.createRadialGradient(ball.x-9,ball.y-11,2,ball.x+2,ball.y+3,30);
+            glaze.addColorStop(0,'#ffffff');glaze.addColorStop(.14,'#e7ecec');glaze.addColorStop(.3,ballColor);glaze.addColorStop(.7,ballColor);glaze.addColorStop(1,'#24343d');
+            ctx.beginPath();ctx.arc(ball.x,ball.y,25,0,Math.PI*2);ctx.fillStyle=glaze;ctx.fill();
+            ctx.beginPath();ctx.ellipse(ball.x-8,ball.y-11,7,4,-.6,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.7)';ctx.fill();
+            ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.35)';ctx.lineWidth=2;
+            ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 10px sans-serif';
+            ctx.strokeText(winner.name,ball.x,ball.y+4,43);ctx.fillText(winner.name,ball.x,ball.y+4,43);
+            ctx.restore();
 
             if (frame > 220) { 
                 stopSound('slow');
@@ -1008,6 +1222,30 @@ function playGaragara(pool, winner) {
 
 // --- EVENTS ---
 els.toggleSidebarBtn.onclick = () => els.sidebar.classList.toggle('collapsed');
+document.querySelector('[data-anim="cards"]').onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.currentTarget.click();}};
+const slotLever=document.getElementById('slotLever');
+let leverStart=null;
+slotLever.onclick=()=>{if(!isAnimating)els.pickBtn.click();};
+slotLever.onpointerdown=event=>{if(isAnimating)return;leverStart=event.clientY;slotLever.setPointerCapture(event.pointerId);};
+slotLever.onpointermove=event=>{if(leverStart===null)return;const distance=Math.max(0,Math.min(event.clientY-leverStart,90));slotLever.style.setProperty('--lever-angle',(distance*.9)+'deg');};
+slotLever.onpointerup=event=>{if(leverStart===null)return;const pulled=event.clientY-leverStart>25;leverStart=null;slotLever.style.removeProperty('--lever-angle');if(pulled&&!isAnimating)els.pickBtn.click();};
+slotLever.onpointercancel=()=>{leverStart=null;slotLever.style.removeProperty('--lever-angle');};
+
+function showWinnerPresentation(names) {
+    const dialog=document.getElementById('winnersDialog');
+    const list=document.getElementById('presentationNames');
+    const en=appState.settings.lang!=='ja';
+    document.getElementById('presentationTitle').textContent=en?'WINNERS':'指名されたみなさん';
+    document.getElementById('closePresentationBtn').textContent=en?'Close ×':'閉じる ×';
+    list.replaceChildren();list.classList.toggle('single',names.length===1);
+    if(!names.length){const empty=document.createElement('p');empty.textContent=en?'No selections yet.':'まだ指名されていません。';list.appendChild(empty);}
+    names.forEach((name,index)=>{const card=document.createElement('div');card.className='presented-name';const student=getCurrentClass().students.find(item=>item.name===name);if(student?.gender==='M')card.classList.add('male');if(student?.gender==='F')card.classList.add('female');const number=document.createElement('small');number.textContent=names.length>1?'#'+(index+1):'WINNER';card.append(number,document.createTextNode(name));list.appendChild(card);});
+    if(!dialog.open)dialog.showModal();
+}
+document.getElementById('showWinnersBtn').onclick=()=>showWinnerPresentation(getCurrentClass().history);
+document.getElementById('showWinnersMobileBtn').onclick=()=>showWinnerPresentation(getCurrentClass().history);
+document.getElementById('closePresentationBtn').onclick=()=>document.getElementById('winnersDialog').close();
+
 els.clearHistoryBtn.onclick = () => {
     const cls = getCurrentClass(); const lang = appState.settings.lang || 'ja';
     if (cls.history.length === 0) return;
@@ -1214,11 +1452,12 @@ els.settingsBtn.onclick = () => {
     editingClassId = appState.currentClassId; renderSettings(); loadClassToForm(editingClassId, true);
     els.settingsModal.classList.add('active');
 };
-els.soundBtn.onclick = () => { appState.settings.sound = !appState.settings.sound; saveData(); render(); };
+els.soundBtn.onclick = () => { appState.settings.sound = !appState.settings.sound; if(!appState.settings.sound)stopAllSounds();else initAudioPool(); saveData(); render(); };
 els.settingsModal.onclick = (e) => { if(e.target === els.settingsModal) els.settingsModal.classList.remove('active'); };
 els.classSelector.onchange = (e) => { appState.currentClassId = e.target.value; saveData(); render(); };
 
 render();
 </script>
+
 </body>
 </html>
