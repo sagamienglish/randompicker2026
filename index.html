@@ -971,26 +971,21 @@ function playDrum(pool, winner) {
     if (winIndex > 0 && strip[winIndex-1].name === winner.name) strip[winIndex-1] = pool.find(s=>s.name!==winner.name) || winner;
     if (winIndex < strip.length-1 && strip[winIndex+1].name === winner.name) strip[winIndex+1] = pool.find(s=>s.name!==winner.name) || winner;
 
-    const itemHeight = 110; let scrollY = 0; let speed = 60; let state = 'spinning'; let prevState = '';
-    const patterns = [{ friction: 0.97 }, { friction: 0.95 }, { friction: 0.98 }, { friction: 0.96 }, { friction: 0.985 }];
-    const pat = patterns[Math.floor(Math.random() * patterns.length)];
-    let targetY = (winIndex * itemHeight) - (height/2) + (itemHeight/2);
+    const itemHeight = 110;
+    const targetY = (winIndex * itemHeight) - (height/2) + (itemHeight/2);
+    const startY = Math.max(0, targetY - itemHeight * 20);
+    const duration = 2100, started = performance.now();
+    let scrollY = startY, speed = 60, state = 'spinning', prevState = '';
+    let previousY = startY;
 
     const loop = () => {
         ctx.clearRect(0,0,width,height);
         drawSlotBackdrop(ctx,width,height);
-        
-        if (state === 'spinning') { 
-            scrollY += speed; 
-            if (scrollY > targetY - 1500) state = 'slowing'; 
-        }
-        else if (state === 'slowing') {
-            speed *= pat.friction;
-            const dist = targetY - scrollY;
-            if (dist < 500) speed = Math.max(dist * 0.08, 0.5); 
-            scrollY += speed;
-            if (dist < 1) { scrollY = targetY; state = 'stopping'; }
-        }
+        const progress = Math.min((performance.now() - started) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        scrollY = startY + (targetY - startY) * eased;
+        speed = Math.abs(scrollY - previousY); previousY = scrollY;
+        state = progress >= 1 ? 'stopping' : progress >= .45 ? 'slowing' : 'spinning';
 
         // --- Sound Handling ---
         if (state === 'spinning' && prevState !== 'spinning') {
