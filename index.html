@@ -856,7 +856,7 @@ function drawIdle() {
     } else if (anim === 'cards') {
         drawCardTable(ctx,w,h);
         const candidates=getCandidates(getCurrentClass()).slice(0,8);
-        candidates.forEach((student,i)=>{const pos=cardTablePosition(i,w,h);ctx.save();ctx.translate(pos.x,pos.y);ctx.scale(pos.scale,pos.scale);drawShuffleCard(ctx,0,0,0,1,student);ctx.restore();});
+        candidates.forEach((student,i)=>{const pos=cardTablePosition(i,w,h);ctx.save();ctx.translate(pos.x,pos.y);ctx.scale(pos.scale,pos.scale);drawShuffleCard(ctx,0,0,0,1,null);ctx.restore();});
     } else if (anim === 'garagara') {
         drawGaragaraMachine(ctx, cx, cy, 0);
     }
