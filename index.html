@@ -974,7 +974,10 @@ function playDrum(pool, winner) {
     const itemHeight = 110;
     const targetY = (winIndex * itemHeight) - (height/2) + (itemHeight/2);
     const startY = Math.max(0, targetY - itemHeight * 20);
-    const duration = 2100, started = performance.now();
+    const duration = isMultiPickSession
+        ? 1000 + Math.random() * 800
+        : 2500 + Math.random() * 1500;
+    const started = performance.now();
     let scrollY = startY, speed = 60, state = 'spinning', prevState = '';
     let previousY = startY;
 
@@ -1038,7 +1041,8 @@ function playRoulette(pool, winner) {
     const theme=getComputedStyle(document.documentElement).getPropertyValue('--btn-primary').trim();
     document.body.classList.add('roulette-projecting');
     const target=Math.PI*1.5-angle*.5+(Math.random()-.5)*angle*.45;
-    const total=Math.PI*2*6+target, duration=6200, start=performance.now();
+    const rotations=isMultiPickSession?3:6;
+    const total=Math.PI*2*rotations+target, duration=isMultiPickSession?2500:5000, start=performance.now();
     let slowing=false;
     playSoundLoop('rolling');
     function frame(now) {
