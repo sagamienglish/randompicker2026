@@ -375,6 +375,15 @@
 
         body[data-animation="cards"] .stage canvas { width:min(1100px,100%); top:43%; max-height:calc(100% - 100px); }
         @media(max-width:600px){ .anim-tabs { gap:1px; } .tab-btn { width:36px; } }
+        body[data-animation="roulette"] .result-name:not(:empty) {
+            display: inline-block;
+            max-width: 100%;
+            padding: .18em .55em;
+            border-radius: .32em;
+            background: rgba(255,255,255,.84);
+            backdrop-filter: blur(5px);
+            overflow-wrap: anywhere;
+        }
     </style>
 </head>
 <body>
