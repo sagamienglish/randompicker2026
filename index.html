@@ -356,7 +356,8 @@
         body.roulette-projecting::after { content: ''; position: fixed; inset: 0; background: var(--bg-color); z-index: 39; }
         body.roulette-projecting .stage canvas { position: fixed; top: 50%; left: 50%; width: min(140vw, 140vh); height: auto; max-height: none; z-index: 40; }
         body.roulette-projecting .stage { z-index: 40; }
-        body.roulette-projecting .control-panel, body.roulette-projecting .result-wrapper { visibility: hidden; }
+        body.roulette-projecting .result-wrapper { z-index: 41; }
+        body.roulette-projecting .control-panel { visibility: hidden; }
 
         body[data-animation="drum"] .stage canvas { width: min(900px,115%); }
         .mobile-present { white-space: nowrap; flex-shrink: 0; padding: 9px 7px; }
@@ -1079,7 +1080,10 @@ function playRoulette(pool, winner) {
         ctx.shadowColor='transparent';ctx.beginPath();ctx.arc(0,-5,4,0,Math.PI*2);ctx.fillStyle='#F4CE78';ctx.fill();ctx.restore();
         ctx.restore();
         if(p<1)requestAnimationFrame(frame);
-        else{stopSound('slow');playSoundOnce('stop');setTimeout(()=>{document.body.classList.remove('roulette-projecting');onOneFinished(winner);},900);}
+        else{stopSound('slow');playSoundOnce('stop');setTimeout(() => {
+            if (selectionQueue.length === 0) document.body.classList.remove('roulette-projecting');
+            onOneFinished(winner);
+        }, 900);}
     }
     requestAnimationFrame(frame);
 }
